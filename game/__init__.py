@@ -1,8 +1,8 @@
 SUITS = {
-    'Hearts': '♥',
-    'Diamonds': '♦',
-    'Clubs': '♣',
-    'Spades': '♠'
+    'hearts': '♥',
+    'diamonds': '♦',
+    'clubs': '♣',
+    'spades': '♠'
 }
 
 RANKS = {

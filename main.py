@@ -1,7 +1,11 @@
 from game.card import Card
+from game.deck import Deck
 
-card = Card('Hearts', '11')
-card2 = Card('Diamonds', '1')
-card3 = Card('Clubs', '13')
-card4 = Card('Spades', '10')
-print(card, card2, card3, card4, sep='\n')
+# build the deck
+cards = []
+for suit in ['hearts', 'diamonds', 'clubs', 'spades']:
+    for rank in ['1','2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']:
+        cards.append(Card(suit, rank))
+
+deck = Deck(cards)
+print(deck)
