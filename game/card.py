@@ -23,6 +23,8 @@ class Card:
         )
         return card
     
+    def lines(self):
+        return str(self).split('\n')  
     
     def get_suit(self) -> str:
         return self.__suit

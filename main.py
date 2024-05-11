@@ -1,5 +1,6 @@
 from game.card import Card
 from game.deck import Deck
+from game import print_cards_in_rows
 
 # build the deck
 cards = []
@@ -8,12 +9,4 @@ for suit in ['hearts', 'diamonds', 'clubs', 'spades']:
         cards.append(Card(suit, rank))
 
 deck = Deck(cards)
-
-deck.shuffle()
-print(deck.get_deck_count())
-
-hand = []
-hand.append(deck.draw())
-hand.append(deck.draw())
-
-print(deck.get_deck_count())
+print_cards_in_rows(deck.cards)

@@ -20,3 +20,11 @@ RANKS = {
     '12': 'Q',
     '13': 'K'
 }
+
+def print_cards_in_rows(cards):
+    cards_lines = [card.lines() for card in cards]
+    
+    for i in range(0, len(cards_lines), 5):
+        for lines in zip(*cards_lines[i:i+5]):
+            print(' '.join(lines))
+        print()
