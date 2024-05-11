@@ -8,4 +8,12 @@ for suit in ['hearts', 'diamonds', 'clubs', 'spades']:
         cards.append(Card(suit, rank))
 
 deck = Deck(cards)
-print(deck)
+
+deck.shuffle()
+print(deck.get_deck_count())
+
+hand = []
+hand.append(deck.draw())
+hand.append(deck.draw())
+
+print(deck.get_deck_count())

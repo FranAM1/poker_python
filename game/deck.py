@@ -1,4 +1,5 @@
-
+import random
+from game.card import Card
 
 class Deck:
     cards: list
@@ -16,10 +17,18 @@ class Deck:
         self.cards.remove(card)
 
     def shuffle(self):
+        random.shuffle(self.cards)
         pass
 
-    def draw(self):
-        pass
+    def draw(self) -> Card|None:
+        deck_count = self.get_deck_count()
+        if deck_count == 0:
+            return None
+        
+        random_index = random.randint(0, deck_count - 1)
+        card = self.cards[random_index]
+        self.cards.pop(random_index)
+        return card
 
-    def draw_hand(self):
-        pass
+    def get_deck_count(self):
+        return len(self.cards)
