@@ -4,12 +4,16 @@ from game import SUITS, RANKS
 
 class Deck:
     cards: list
+    board: list
+    MAX_CARDS = 52
+    MAX_BOARD = 5
 
     def __init__(self):
         self.cards = []
+        self.board = []
     
     def __str__(self) -> str:
-        return '\n'.join([str(card) for card in self.cards])
+        return f"Deck with {self.get_deck_count()} cards"
 
     def add_card(self, card):
         self.cards.append(card)
@@ -30,11 +34,21 @@ class Deck:
         card = self.cards[random_index]
         self.cards.pop(random_index)
         return card
+    
+    def draw_board(self) -> Card|None:
+        if len(self.board) >= self.MAX_BOARD:
+            print("La mesa ya tiene 5 cartas.")
+            return None
+        
+        self.board.append(self.draw())
+        return self.board[-1]
 
     def get_deck_count(self):
         return len(self.cards)
     
-    def build_deck(self):
+    def build_new_deck(self):
+        self.cards = []
+        self.board = []
         for suit in SUITS.keys():
             for rank in RANKS.keys():
                 self.add_card(Card(suit, rank))
