@@ -1,11 +1,12 @@
 import random
 from game.card import Card
+from game import SUITS, RANKS
 
 class Deck:
     cards: list
 
-    def __init__(self, cards=[]):
-        self.cards = cards
+    def __init__(self):
+        self.cards = []
     
     def __str__(self) -> str:
         return '\n'.join([str(card) for card in self.cards])
@@ -32,3 +33,9 @@ class Deck:
 
     def get_deck_count(self):
         return len(self.cards)
+    
+    def build_deck(self):
+        for suit in SUITS.keys():
+            for rank in RANKS.keys():
+                self.add_card(Card(suit, rank))
+        self.shuffle()
