@@ -17,9 +17,9 @@ class Card:
         '│      {} │\n'
         '└─────────┘\n'
         ).format(
-            format(self.__rank, ' <2'),
-            format(self.__suit, ' <2'),
-            format(self.__rank, ' >2')
+            format(self.get_rank(), ' <2'),
+            format(self.get_suit_value(), ' <2'),
+            format(self.get_rank(), ' >2')
         )
         return card
     
@@ -29,15 +29,21 @@ class Card:
     def get_suit(self) -> str:
         return self.__suit
     
+    def get_suit_value(self) -> int:
+        return SUITS[self.__suit]
+    
     def get_rank(self) -> str:
         return self.__rank
+    
+    def get_rank_value(self) -> int:
+        return RANKS[self.__rank]
     
     def set_suit(self, suit: str):
         if suit not in SUITS:
             raise ValueError(f"Invalid suit: {suit}")
-        self.__suit = SUITS[suit]
+        self.__suit = suit
 
     def set_rank(self, rank: str):
         if rank not in RANKS:
             raise ValueError(f"Invalid rank: {rank}")
-        self.__rank = RANKS[rank]
+        self.__rank = rank
