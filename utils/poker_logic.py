@@ -82,6 +82,19 @@ HANDS_RANKING = {
     'high_card': 1
 }
 
+HANDS_TRANSLATION = {
+    'royal_flush': 'Escalera real de color',
+    'straight_flush': 'Escalera de color',
+    'four_of_a_kind': 'Poker',
+    'full_house': 'Full',
+    'flush': 'Color',
+    'straight': 'Escalera',
+    'three_of_a_kind': 'Trio',
+    'two_pair': 'Doble pareja',
+    'one_pair': 'Pareja',
+    'high_card': 'Carta alta'
+}
+
 def value_of_hand(hand:dict, board:dict):
     
     full_hand = hand + board
@@ -92,7 +105,7 @@ def value_of_hand(hand:dict, board:dict):
             value = hand_value
             break
 
-    print(value)
+    print(HANDS_TRANSLATION[value])
 
     return HANDS_RANKING[value]
 
