@@ -1,4 +1,4 @@
-from game import SUITS, RANKS, HANDS_RANKING
+from game import SUITS, RANKS
 
 # Escalera real de color
 def is_royal_flush(hand: list) -> bool:
@@ -67,6 +67,19 @@ HAND_VALUES = {
     "three_of_a_kind": is_three_of_a_kind,
     "two_pair": is_two_pair,
     "one_pair": is_one_pair
+}
+
+HANDS_RANKING = {
+    'royal_flush': 10,
+    'straight_flush': 9,
+    'four_of_a_kind': 8,
+    'full_house': 7,
+    'flush': 6,
+    'straight': 5,
+    'three_of_a_kind': 4,
+    'two_pair': 3,
+    'one_pair': 2,
+    'high_card': 1
 }
 
 def value_of_hand(hand:dict, board:dict):
