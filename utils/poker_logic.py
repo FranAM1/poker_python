@@ -117,7 +117,7 @@ def compare_hands(list_hands: list, board:dict):
             best_hand = hand
             best_value = value
 
-    return best_hand, best_value
+    return best_hand
 
 
     

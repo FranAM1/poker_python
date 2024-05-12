@@ -23,6 +23,11 @@ class Card:
         )
         return card
     
+    def __eq__(self, other):
+        if isinstance(other, Card):
+            return self.__suit == other.__suit and self.__rank == other.__rank
+        return False
+    
     def lines(self):
         return str(self).split('\n')  
     

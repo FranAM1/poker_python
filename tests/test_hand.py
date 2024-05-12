@@ -1,6 +1,6 @@
 import unittest
 from game.card import Card
-from utils.poker_logic import is_royal_flush, is_straight_flush, is_four_of_a_kind, is_full_house, is_flush, is_straight, is_three_of_a_kind, is_two_pair, is_one_pair, value_of_hand
+from utils.poker_logic import compare_hands, is_royal_flush, is_straight_flush, is_four_of_a_kind, is_full_house, is_flush, is_straight, is_three_of_a_kind, is_two_pair, is_one_pair, value_of_hand
 
 class TestHand(unittest.TestCase):
     def test_royal_flush(self):
@@ -194,3 +194,39 @@ class TestHand(unittest.TestCase):
         ]
         self.assertEqual(VALUE_HIGH_CARD, value_of_hand(hand, []))
         
+    def test_compare_best_hand(self):
+        #generate 4 randoms hands and a board
+        hand1 = [
+            Card("spades", "Q"),
+            Card("hearts", "A")
+        ]
+
+        hand2 = [
+            Card("hearts", "10"),
+            Card("diamonds", "10")
+        ]
+
+        hand3 = [
+            Card("clubs", "K"),
+            Card("spades", "K")
+        ]
+
+        hand4 = [
+            Card("hearts", "2"),
+            Card("diamonds", "2")
+        ]
+
+        board = [
+            Card("spades", "10"),
+            Card("hearts", "J"),
+            Card("hearts", "Q"),
+            Card("spades", "2"),
+            Card("hearts", "2")
+        ]
+
+        #compare the hands
+        list_hands = [hand1, hand2, hand3, hand4]
+        best_hand = hand4
+        
+
+        self.assertEqual(best_hand, compare_hands(list_hands, board))
