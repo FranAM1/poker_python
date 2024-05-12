@@ -104,8 +104,20 @@ def value_of_hand(hand:dict, board:dict):
         if function(full_hand):
             value = hand_value
             break
-        
+
     return HANDS_RANKING[value]
+
+def compare_hands(list_hands: list, board:dict):
+    best_hand = list_hands[0]
+    best_value = value_of_hand(best_hand, board)
+
+    for hand in list_hands[1:]:
+        value = value_of_hand(hand, board)
+        if value > best_value:
+            best_hand = hand
+            best_value = value
+
+    return best_hand, best_value
 
 
     
