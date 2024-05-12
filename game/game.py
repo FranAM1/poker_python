@@ -12,10 +12,10 @@ class Game():
         self.__pot = 0
 
     def add_player(self, player):
-        self.players.append(player)
+        self.__players.append(player)
 
     def start(self):
-        for player in self.players:
+        for player in self.__players:
             player.play()
 
     
