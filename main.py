@@ -2,8 +2,7 @@ from game.card import Card
 from game.deck import Deck
 from game import print_cards_in_rows
 from utils.poker_logic import value_of_hand
-
-# build the deckç
+from tests.test_hand import test_hands
 
 while True:
     test = input("Pedir mano? (s/n): ")

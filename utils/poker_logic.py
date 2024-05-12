@@ -104,9 +104,7 @@ def value_of_hand(hand:dict, board:dict):
         if function(full_hand):
             value = hand_value
             break
-
-    print(HANDS_TRANSLATION[value])
-
+        
     return HANDS_RANKING[value]
 
 
