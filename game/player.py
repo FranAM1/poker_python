@@ -7,6 +7,7 @@ class Player:
     def __init__(self, name):
         self.__name = name
         self.__score = 0
+        self.__hand = []
 
     def add_score(self, score: int):
         self.__score += score

@@ -1,27 +1,26 @@
-from game.card import Card
 from game.deck import Deck
+from game.player import Player
 from game import print_cards_in_rows
 from utils.poker_logic import value_of_hand
 import threading
 import subprocess
 
-def start_server():
-    print("Iniciando el servidor...")
-    subprocess.run(["python", "server/server.py"])
+while True:
+    deck = Deck()
+    deck.build_new_deck()
 
-def start_client():
-    print("Iniciando el cliente...")
-    subprocess.run(["python", "client/client.py"])
+    player1 = Player("Jugador 1")
+    player2 = Player("Jugador 2")
 
-if __name__ == "__main__":
-    # Ejecutar el servidor y el cliente en subprocesos separados
-    server_thread = threading.Thread(target=start_server)
-    client_thread = threading.Thread(target=start_client)
+    player1.add_card(deck.draw())
+    player1.add_card(deck.draw())
+    player2.add_card(deck.draw())
+    player2.add_card(deck.draw())
 
-    server_thread.start()
-    client_thread.start()
+    print("Mano del jugador 1:")
+    player1.print_hand()
 
-    # Esperar a que ambos subprocesos terminen
-    server_thread.join()
-    client_thread.join()
+    print("Mano del jugador 2:")
+    player2.print_hand()
     
+    break

@@ -1,4 +1,4 @@
-from . import SUITS, RANKS
+from game import SUITS, RANKS
 class Card:
     __suit: str
     __rank: str
@@ -29,7 +29,10 @@ class Card:
         return False
     
     def lines(self):
-        return str(self).split('\n')  
+        return str(self).split('\n') 
+    
+
+    # MARK: - Getters and Setters
     
     def get_suit(self) -> str:
         return self.__suit

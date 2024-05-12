@@ -1,5 +1,3 @@
-from .card import Card
-
 SUITS = {
     'hearts': '♥',
     'diamonds': '♦',
@@ -23,7 +21,7 @@ RANKS = {
     '2': 2
 }
 
-def print_cards_in_rows(cards: list[Card]):
+def print_cards_in_rows(cards: list):
     cards_lines = [card.lines() for card in cards]
     
     for i in range(0, len(cards_lines), 5):
