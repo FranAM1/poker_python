@@ -44,7 +44,7 @@ def is_three_of_a_kind(hand: list) -> bool:
 def is_two_pair(hand: list) -> bool:
     ranks = [card.get_rank() for card in hand]
     pairs = 0
-    for rank in ranks:
+    for rank in set(ranks):
         if ranks.count(rank) == 2:
             pairs += 1
     return pairs == 2
