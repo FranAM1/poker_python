@@ -12,7 +12,7 @@ class Player:
         self.__score += score
 
     def __str__(self):
-        return f"{self.get_name} has {self.get_score} points."
+        return f"{self.get_name} tiene {self.get_score} puntos."
     
     def add_card(self, card):
         self.__hand.append(card)
