@@ -1,4 +1,5 @@
 import unittest
+from game import print_cards_in_rows
 from game.card import Card
 from utils.poker_logic import compare_hands, is_royal_flush, is_straight_flush, is_four_of_a_kind, is_full_house, is_flush, is_straight, is_three_of_a_kind, is_two_pair, is_one_pair, value_of_hand
 
@@ -137,6 +138,43 @@ class TestHand(unittest.TestCase):
         #compare the hands
         list_hands = [hand1, hand2, hand3, hand4]
         best_hand = hand4
-        
 
-        self.assertEqual(best_hand, compare_hands(list_hands, board))
+        best_hands = compare_hands(list_hands, board)
+
+        self.assertEqual(best_hand, best_hands[0])
+
+    def test_compare_hands_with_tie(self):
+        hand1 = [
+            Card("clubs", "A"),
+            Card("spades", "A")
+        ]
+
+        hand2 = [
+            Card("hearts", "K"),
+            Card("diamonds", "K")
+        ]
+
+        hand3 = [
+            Card("clubs", "K"),
+            Card("spades", "K")
+        ]
+
+        hand4 = [
+            Card("hearts", "3"),
+            Card("diamonds", "4")
+        ]
+
+        board = [
+            Card("spades", "10"),
+            Card("hearts", "J"),
+            Card("hearts", "Q"),
+            Card("spades", "2"),
+            Card("hearts", "2")
+        ]
+
+        list_hands = [hand1, hand2, hand3, hand4]
+        best_hands = [hand2, hand3] 
+
+        result_hands = compare_hands(list_hands, board)
+
+        self.assertEqual(best_hands, result_hands)

@@ -30,7 +30,10 @@ def is_straight(hand: list) -> bool:
     ranks = [card.get_rank() for card in hand]
     ranks_values = [RANKS[rank] for rank in ranks]
     ranks_values.sort()
-    return ranks_values == list(range(ranks_values[0], ranks_values[0] + 5))
+    return ranks_values == list(range(
+        ranks_values[0], 
+        ranks_values[0] + 5
+    ))
 
 # Trio
 def is_three_of_a_kind(hand: list) -> bool:
@@ -111,13 +114,22 @@ def compare_hands(list_hands: list, board:dict):
     best_hand = list_hands[0]
     best_value = value_of_hand(best_hand, board)
 
+    tied_hands = [best_hand]
+
     for hand in list_hands[1:]:
         value = value_of_hand(hand, board)
         if value > best_value:
             best_hand = hand
             best_value = value
+            tied_hands = [hand]  
+        elif value == best_value:
+            tied_hands.append(hand)  
 
-    return best_hand
+    if len(tied_hands) > 1:
+        max_rank = max(card.get_rank() for hand in tied_hands for card in hand)
+        tied_hands = [
+            hand for hand in tied_hands if max(card.get_rank() for card in hand) 
+            == max_rank
+        ]
 
-
-    
+    return tied_hands

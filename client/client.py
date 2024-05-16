@@ -1,12 +1,10 @@
 import socket
 
 # Configuración del cliente
-HOST = '127.0.0.1'  # Dirección IP del servidor (localhost)
-PORT = 65432        # Puerto utilizado por el servidor
+HOST = '127.0.0.1' 
+PORT = 65432        
 
-# Crear un socket TCP/IP
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-    # Conectar el socket al servidor
     client_socket.connect((HOST, PORT))
     
     while True:
