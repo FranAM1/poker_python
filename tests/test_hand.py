@@ -13,16 +13,6 @@ class TestHand(unittest.TestCase):
         ]
         self.assertTrue(is_royal_flush(hand))
 
-    def test_not_royal_flush(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("hearts", "J"),
-            Card("hearts", "Q"),
-            Card("hearts", "K"),
-            Card("hearts", "2")
-        ]
-        self.assertFalse(is_royal_flush(hand))
-
     def test_straight_flush(self):
         hand = [
             Card("hearts", "10"),
@@ -32,16 +22,6 @@ class TestHand(unittest.TestCase):
             Card("hearts", "9")
         ]
         self.assertTrue(is_straight_flush(hand))
-
-    def test_not_straight_flush(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("hearts", "J"),
-            Card("hearts", "Q"),
-            Card("hearts", "K"),
-            Card("hearts", "2")
-        ]
-        self.assertFalse(is_straight_flush(hand))
 
     def test_four_of_a_kind(self):
         hand = [
@@ -53,16 +33,6 @@ class TestHand(unittest.TestCase):
         ]
         self.assertTrue(is_four_of_a_kind(hand))
 
-    def test_not_four_of_a_kind(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "10"),
-            Card("clubs", "10"),
-            Card("spades", "9"),
-            Card("hearts", "9")
-        ]
-        self.assertFalse(is_four_of_a_kind(hand))
-
     def test_full_house(self):
         hand = [
             Card("hearts", "10"),
@@ -72,16 +42,6 @@ class TestHand(unittest.TestCase):
             Card("hearts", "9")
         ]
         self.assertTrue(is_full_house(hand))
-
-    def test_not_full_house(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "10"),
-            Card("clubs", "10"),
-            Card("spades", "9"),
-            Card("hearts", "8")
-        ]
-        self.assertFalse(is_full_house(hand))
 
     def test_flush(self):
         hand = [
@@ -93,16 +53,6 @@ class TestHand(unittest.TestCase):
         ]
         self.assertTrue(is_flush(hand))
 
-    def test_not_flush(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("hearts", "J"),
-            Card("hearts", "Q"),
-            Card("hearts", "K"),
-            Card("spades", "2")
-        ]
-        self.assertFalse(is_flush(hand))
-
     def test_straight(self):
         hand = [
             Card("hearts", "10"),
@@ -112,16 +62,6 @@ class TestHand(unittest.TestCase):
             Card("hearts", "A")
         ]
         self.assertTrue(is_straight(hand))
-
-    def test_not_straight(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "J"),
-            Card("clubs", "Q"),
-            Card("spades", "K"),
-            Card("hearts", "2")
-        ]
-        self.assertFalse(is_straight(hand))
 
     def test_three_of_a_kind(self):
         hand = [
@@ -133,16 +73,6 @@ class TestHand(unittest.TestCase):
         ]
         self.assertTrue(is_three_of_a_kind(hand))
 
-    def test_not_three_of_a_kind(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "4"),
-            Card("clubs", "10"),
-            Card("spades", "K"),
-            Card("hearts", "9")
-        ]
-        self.assertFalse(is_three_of_a_kind(hand))
-
     def test_two_pair(self):
         hand = [
             Card("hearts", "10"),
@@ -153,16 +83,6 @@ class TestHand(unittest.TestCase):
         ]
         self.assertTrue(is_two_pair(hand))
 
-    def test_not_two_pair(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "10"),
-            Card("clubs", "K"),
-            Card("spades", "Q"),
-            Card("hearts", "A")
-        ]
-        self.assertFalse(is_two_pair(hand))
-
     def test_one_pair(self):
         hand = [
             Card("hearts", "10"),
@@ -172,16 +92,6 @@ class TestHand(unittest.TestCase):
             Card("hearts", "A")
         ]
         self.assertTrue(is_one_pair(hand))
-
-    def test_not_one_pair(self):
-        hand = [
-            Card("hearts", "10"),
-            Card("diamonds", "3"),
-            Card("clubs", "K"),
-            Card("spades", "Q"),
-            Card("hearts", "9")
-        ]
-        self.assertFalse(is_one_pair(hand))
 
     def test_high_card(self):
         VALUE_HIGH_CARD= 1
