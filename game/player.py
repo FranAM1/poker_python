@@ -6,14 +6,14 @@ class Player:
 
     def __init__(self, name):
         self.__name = name
-        self.__score = 0
+        self.__chips = 0
         self.__hand = []
 
-    def add_score(self, score: int):
-        self.__score += score
+    def add_chips(self, chips: int):
+        self.__chips += chips
 
     def __str__(self):
-        return f"{self.get_name} tiene {self.get_score} puntos."
+        return f"{self.get_name} tiene {self.get_chips} puntos."
     
     def add_card(self, card):
         self.__hand.append(card)
@@ -39,8 +39,8 @@ class Player:
     def set_name(self, name):
         self.__name = name
 
-    def get_score(self):
-        return self.__score
+    def get_chips(self):
+        return self.__chips
     
-    def set_score(self, score):
-        return self.__score
+    def set_chips(self, chips):
+        return self.__chips
