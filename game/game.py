@@ -18,6 +18,22 @@ class Game():
         for player in self.__players:
             player.play()
 
+    def add_to_pot(self, amount):
+        self.__pot += amount
+
+    def reset_pot(self):
+        """Reset the pot to zero."""
+        self.__pot = 0
+
+    def distribute_pot(self, winners):
+        """Distribute the pot to the winner(s)."""
+        if winners:
+            winnings = self.__pot // len(winners)
+            for winner in winners:
+                winner.add_chips(winnings)
+            
+            self.reset_pot()
+
     
     # MARK: - Getters and Setters
     def get_players(self):
