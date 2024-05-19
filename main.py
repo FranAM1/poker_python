@@ -2,25 +2,24 @@ from game.deck import Deck
 from game.player import Player
 from game import print_cards_in_rows
 from utils.poker_logic import value_of_hand
-import threading
-import subprocess
+import sys
+from client.client import run_client
+from server.server import run_server
 
-while True:
-    deck = Deck()
-    deck.build_new_deck()
+def main():
+    if len(sys.argv) != 2:
+        print("Uso: python main.py <server|client>")
+        sys.exit(1)
 
-    player1 = Player("Jugador 1")
-    player2 = Player("Jugador 2")
-
-    player1.add_card(deck.draw())
-    player1.add_card(deck.draw())
-    player2.add_card(deck.draw())
-    player2.add_card(deck.draw())
-
-    print("Mano del jugador 1:")
-    player1.print_hand()
-
-    print("Mano del jugador 2:")
-    player2.print_hand()
+    role = sys.argv[1]
     
-    break
+    if role == 'server':
+        run_server()
+    elif role == 'client':
+        run_client()
+    else:
+        print("Rol invalido. Uso: python main.py <server|client>")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

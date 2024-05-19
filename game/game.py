@@ -1,22 +1,38 @@
 from game.player import Player
 from game.card import Card
+from game.deck import Deck
 
 class Game():
     __players: list[Player]
     __board: list[Card]
     __pot: int
+    __started: bool
+    __votes_to_start: int
+    __deck: Deck
 
     def __init__(self):
         self.__players = []
-        self.__board = []
+        self.__board = [Card]
         self.__pot = 0
+        self.__started = False
+        self.__votes_to_start = 0
+        self.__deck = Deck()
+
+    def start(self):
+        if (len(self.__players) > 1 and 
+            self.__votes_to_start >= len(self.__players)
+        ):
+            self.__started = True
+            print("Juego iniciado!")
+            self.__deck.build_new_deck()
+        else:
+            print("No se puede iniciar la partida. Faltan jugadores o votos.")
+
+    def add_vote_to_start(self):
+        self.__votes_to_start += 1
 
     def add_player(self, player):
         self.__players.append(player)
-
-    def start(self):
-        for player in self.__players:
-            player.play()
 
     def add_to_pot(self, amount):
         self.__pot += amount
@@ -53,3 +69,23 @@ class Game():
     
     def set_pot(self, pot):
         self.__pot = pot
+
+    def has_started(self):
+        return self.__started
+    
+    def has_started(self):
+        return self.__started
+    
+    def get_votes_to_start(self):
+        return self.__votes_to_start
+    
+    def set_votes_to_start(self, votes_to_start):
+        self.__votes_to_start = votes_to_start
+
+    def get_deck(self):
+        return self.__deck
+    
+    def set_deck(self, deck):
+        self.__deck = deck
+    
+    
