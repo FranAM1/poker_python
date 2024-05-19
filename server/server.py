@@ -99,7 +99,12 @@ class PokerServer:
                             "pot": self.game.get_pot()
                             })
                         self.broadcast(response.encode())
-                        
+                    
+                    else:
+                        response = json.dumps({
+                            "no_action": "Accion no tratada"
+                        })
+                        self.broadcast(response.encode())
 
                     
                 else:
