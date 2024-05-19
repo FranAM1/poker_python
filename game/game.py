@@ -73,9 +73,6 @@ class Game():
     def has_started(self):
         return self.__started
     
-    def has_started(self):
-        return self.__started
-    
     def get_votes_to_start(self):
         return self.__votes_to_start
     

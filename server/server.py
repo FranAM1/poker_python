@@ -34,7 +34,6 @@ class PokerServer:
 
     def handle_client(self, client_socket):
         try:
-            # Receive player name
             player_name = client_socket.recv(1024).decode()
             player = Player(player_name)
             self.game.add_player(player)
@@ -66,12 +65,15 @@ class PokerServer:
                             self.game.add_vote_to_start()
                             player.voted_to_start()
                             print(f'Voto recibido de {player.get_name()}.  Votos totales: {self.game.get_votes_to_start()}')
-                            if (self.game.get_votes_to_start == 
-                                len(self.game.get_players())
-                            ):
-                                self.game.start()
+                            self.game.start()
+                            
+                            if self.game.has_started():
                                 self.broadcast(json.dumps(
                                     {"game_started": "El juego ha comenzado!"}
+                                ).encode())
+                            else:
+                                self.broadcast(json.dumps(
+                                    {"game_not_started": "Esperando votos para comenzar el juego."}
                                 ).encode())
                     
                     elif not self.game.has_started():
@@ -87,6 +89,17 @@ class PokerServer:
                         amount = data["amount"]
                         player.remove_chips(amount)
                         self.game.add_to_pot(amount)
+
+                        response = json.dumps({
+                            "player_chips": {
+                                "name": player.get_name(), 
+                                "chips": player.get_chips(), 
+                                "bet": amount
+                                },
+                            "pot": self.game.get_pot()
+                            })
+                        self.broadcast(response.encode())
+                        
 
                     
                 else:
