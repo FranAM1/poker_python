@@ -21,6 +21,11 @@ class Deck:
         random.shuffle(self.cards)
         pass
 
+    def deal(self, players):
+        for player in players:
+            player.add_card(self.draw())
+            player.add_card(self.draw())
+
     def draw(self) -> Card|None:
         deck_count = self.get_deck_count()
         if deck_count == 0:

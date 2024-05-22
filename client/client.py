@@ -1,7 +1,8 @@
 import socket
 import threading
 import json
-from . import actions
+from game.card import Card
+from game.__init__ import print_cards_in_rows
 class PokerClient:
     def __init__(self, host='localhost', port=12345):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,6 +31,14 @@ class PokerClient:
                             print(data["game_not_started"])
                         if "no_action" in data:
                             print(data["no_action"])
+                        if "actions" in data:
+                            for action in data["actions"]:
+                                print(action)
+                        if "hand" in data:
+                            hand_data = data["hand"]
+                            hand = [Card(card["suit"], card["rank"]) for card in hand_data]
+
+                            print_cards_in_rows(hand)
                         
                         self.condition.notify()
                     
@@ -59,9 +68,8 @@ def run_client():
                 action = input('Escribe una accion (ver todas con "acciones"): ')
                 
                 if action == "acciones":
-                    print('Acciones disponibles:')
-                    for action in actions:
-                        print(action)
+                    print("Acciones disponibles:")
+                    client.send_message({"action": action})
                 elif action == "votar":
                     client.send_message({"action": action})
                 elif action == "apuesta":
@@ -71,5 +79,8 @@ def run_client():
                     client.send_message({"action": action})
                     print("Desconectándose del servidor...")
                     break
+                elif action == "mano":
+                    print("Tu mano:")
+                    client.send_message({"action": action})
                 else:
                     client.send_message({"action": action})

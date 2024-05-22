@@ -28,6 +28,12 @@ class Card:
             return self.__suit == other.__suit and self.__rank == other.__rank
         return False
     
+    def to_dict(self) -> dict:
+        return {
+            "suit": self.__suit,
+            "rank": self.__rank
+        }
+    
     def lines(self):
         return str(self).split('\n') 
     

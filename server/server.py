@@ -4,6 +4,7 @@ import json
 from game.player import Player
 from game.card import Card
 from game.game import Game 
+from . import actions
 
 class PokerServer:
     def __init__(self, host='localhost', port=12345, max_players=4):
@@ -75,6 +76,15 @@ class PokerServer:
                                 self.broadcast(json.dumps(
                                     {"game_not_started": "Esperando votos para comenzar el juego."}
                                 ).encode())
+
+                    elif action == "acciones":
+                        response = json.dumps(
+                            {"actions": actions}
+                        )
+                        self.broadcast(response.encode(), client_socket)
+                    
+                    elif action == "salir":
+                        break
                     
                     elif not self.game.has_started():
                         message = json.dumps(
@@ -99,6 +109,14 @@ class PokerServer:
                             "pot": self.game.get_pot()
                             })
                         self.broadcast(response.encode())
+                    
+                    elif action == "mano":
+                        player_hand = player.get_hand()
+                        hand = [card.to_dict() for card in player_hand]
+                        response = json.dumps({
+                            "hand": hand
+                        })
+                        self.broadcast(response.encode(), client_socket)
                     
                     else:
                         response = json.dumps({

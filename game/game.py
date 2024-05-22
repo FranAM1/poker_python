@@ -67,14 +67,6 @@ class Game():
             player.remove_chips(initial_bet)
             self.add_to_pot(initial_bet)
 
-
-    def deal(self):
-        for player in self.__players:
-            player.add_card(self.__deck.draw_card())
-            player.add_card(self.__deck.draw_card())
-
-
-
     def distribute_pot(self, winners):
         """Distribute the pot to the winner(s)."""
         if winners:
