@@ -9,6 +9,7 @@ class Game():
     __started: bool
     __votes_to_start: int
     __deck: Deck
+    __players_turn: int
 
     def __init__(self):
         self.__players = []
@@ -17,6 +18,7 @@ class Game():
         self.__started = False
         self.__votes_to_start = 0
         self.__deck = Deck()
+        self.__players_turn = 0
 
     def start(self):
         if (len(self.__players) > 1 and 
@@ -24,7 +26,7 @@ class Game():
         ):
             self.__started = True
             print("Juego iniciado!")
-            self.__deck.build_new_deck()
+            self.reset_round()
         else:
             print("No se puede iniciar la partida. Faltan jugadores o votos.")
 
@@ -40,6 +42,38 @@ class Game():
     def reset_pot(self):
         """Reset the pot to zero."""
         self.__pot = 0
+
+    def next_turn(self):
+        self.__players_turn = (self.__players_turn + 1) % len(self.__players)
+
+    def get_current_player(self):
+        return self.__players[self.__players_turn]
+    
+    def reset_round(self):
+        """Reset the board and the players' hands."""
+        self.__board = []
+        for player in self.__players:
+            player.reset_hand()
+        self.__deck.build_new_deck()
+        self.__deck.shuffle()
+        self.__deck.deal(self.__players)
+        self.initial_bet()
+
+    def initial_bet(self):
+        """Make the initial bet."""
+        initial_bet = 50
+
+        for player in self.__players:
+            player.remove_chips(initial_bet)
+            self.add_to_pot(initial_bet)
+
+
+    def deal(self):
+        for player in self.__players:
+            player.add_card(self.__deck.draw_card())
+            player.add_card(self.__deck.draw_card())
+
+
 
     def distribute_pot(self, winners):
         """Distribute the pot to the winner(s)."""

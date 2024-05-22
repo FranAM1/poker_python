@@ -20,6 +20,9 @@ class Player:
     def remove_chips(self, chips: int):
         self.__chips -= chips
 
+    def reset_hand(self):
+        self.__hand = []
+
     def __str__(self):
         return f"{self.get_name} tiene {self.get_chips} puntos."
     
