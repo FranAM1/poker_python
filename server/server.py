@@ -102,14 +102,33 @@ class PokerServer:
                         )
                         self.broadcast(message.encode(), client_socket)
 
-                    # MARK: Game started
+                    # MARK: All turns
+                    elif action == "mano":
+                        player_hand = player.get_hand()
+                        hand = [card.to_dict() for card in player_hand]
+                        response = json.dumps({"hand": hand})
+                        self.broadcast(response.encode(), client_socket)
 
+                    elif action == "bote":
+                        response = json.dumps({"pot": self.game.get_pot()})
+                        self.broadcast(response.encode(), client_socket)
+
+                    elif action == "fichas":
+                        response = json.dumps(
+                            {
+                                "chips": player.get_chips(),
+                            }
+                        )
+                        self.broadcast(response.encode(), client_socket)
+
+                    # MARK: Validate player's turn
                     elif validate_users_turn(self.game, player):
                         message = json.dumps(
                             {"not_your_turn": "No es tu turno de jugar."}
                         )
                         self.broadcast(message.encode(), client_socket)
 
+                    # MARK: Player's turn
                     elif action == "apuesta":
                         amount = data["amount"]
                         player.remove_chips(amount)
@@ -128,24 +147,6 @@ class PokerServer:
                             }
                         )
                         self.broadcast(response.encode())
-
-                    elif action == "mano":
-                        player_hand = player.get_hand()
-                        hand = [card.to_dict() for card in player_hand]
-                        response = json.dumps({"hand": hand})
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "bote":
-                        response = json.dumps({"pot": self.game.get_pot()})
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "fichas":
-                        response = json.dumps(
-                            {
-                                "chips": player.get_chips(),
-                            }
-                        )
-                        self.broadcast(response.encode(), client_socket)
 
                     elif action == "pasar":
                         self.game.next_turn()
