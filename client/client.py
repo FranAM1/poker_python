@@ -75,7 +75,6 @@ def run_client():
 
     player_name = input("Escribe tu nombre: ")
     client.send_message(player_name)
-    client.condition.wait()
 
     while True:
         action = input('Escribe una accion (ver todas con "acciones"): ')
