@@ -17,7 +17,7 @@ class Game:
 
     def __init__(self):
         self.__players = []
-        self.__board = [Card]
+        self.__board = []
         self.__pot = 0
         self.__started = False
         self.__votes_to_start = 0
@@ -45,7 +45,7 @@ class Game:
         doesn't have enough chips, True otherwise.
         """
         player_chips = player.get_chips()
-        if amount < self.__current_bet:
+        if amount < self.__current_bet or player_chips < amount:
             return False
         else:
             self.add_to_pot(amount)
@@ -102,11 +102,15 @@ class Game:
     def get_current_player(self):
         return self.__players[self.__players_turn]
 
+    def reset_players_action(self):
+        for player in self.__players:
+            player.set_has_played(False)
+
     def reset_round(self):
-        """Reset the board and the players' hands."""
-        self.__board = []
+        self.__players_turn = 0
         for player in self.__players:
             player.reset_hand()
+        self.reset_players_action()
         self.__deck.build_new_deck()
         self.__deck.shuffle()
         self.__deck.deal(self.__players)

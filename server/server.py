@@ -2,7 +2,6 @@ import socket
 import threading
 import json
 from game.player import Player
-from game.card import Card
 from game.game import Game
 from . import actions, validate_users_turn
 
@@ -85,7 +84,7 @@ class PokerServer:
                                 self.broadcast(
                                     json.dumps(
                                         {
-                                            "game_not_started": "Esperando votos para comenzar el juego."
+                                            "game_not_started": f"Voto recibido de {player.get_name()}. Esperando votos de otros jugadores."
                                         }
                                     ).encode()
                                 )
@@ -125,7 +124,7 @@ class PokerServer:
                         self.broadcast(response.encode(), client_socket)
 
                     # MARK: Validate player's turn
-                    elif validate_users_turn(self.game, player):
+                    elif not validate_users_turn(self.game, player):
                         message = json.dumps(
                             {"not_your_turn": "No es tu turno de jugar."}
                         )
@@ -174,10 +173,11 @@ class PokerServer:
         except Exception as e:
             print(f"Error handling client: {e}")
         finally:
-            del self.clients[client_socket]
-            self.game.get_players().remove(player)
+            if client_socket in self.clients:
+                del self.clients[client_socket]
+            if player in self.game.get_players():
+                self.game.get_players().remove(player)
             client_socket.close()
-            print(f"El jugador {player.get_name()} ha salido.")
 
     def broadcast_game_state(self):
         state = {
@@ -187,20 +187,36 @@ class PokerServer:
         }
         self.broadcast(json.dumps(state).encode())
 
+    def check_and_advance_round(self):
+        if all(player.get_has_played() for player in self.game.get_players()):
+            self.game.next_round()
+            self.broadcast_game_state()
+
     def start(self):
         while True:
-            if len(self.clients) < self.max_players and not self.game.has_started():
-                client_socket, client_address = self.server_socket.accept()
-                print(f"Nueva conexion de {client_address}")
-                threading.Thread(
-                    target=self.handle_client, args=(client_socket,)
-                ).start()
-            elif self.game.has_started():
-                print("El juego ha comenzado. No se permiten nuevas conexiones.")
-            else:
+            client_socket, client_address = self.server_socket.accept()
+            if len(self.clients) >= self.max_players:
                 print(
-                    "Maximo de jugadores alcanzado. No se permiten nuevas conexiones."
+                    f"Conexión rechazada de {client_address}. Máximo de jugadores alcanzado."
                 )
+                client_socket.sendall(
+                    json.dumps({"error": "Máximo de jugadores alcanzado."}).encode()
+                )
+                client_socket.close()
+                continue
+
+            if self.game.has_started():
+                print(
+                    f"Conexión rechazada de {client_address}. El juego ya ha comenzado."
+                )
+                client_socket.sendall(
+                    json.dumps({"error": "El juego ya ha comenzado."}).encode()
+                )
+                client_socket.close()
+                continue
+
+            print(f"Nueva conexion de {client_address}")
+            threading.Thread(target=self.handle_client, args=(client_socket,)).start()
 
 
 def run_server():
