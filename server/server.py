@@ -115,6 +115,16 @@ class PokerServer:
                         response = json.dumps({"pot": self.game.get_pot()})
                         self.broadcast(response.encode(), client_socket)
 
+                    elif action == "mesa":
+                        response = json.dumps(
+                            {
+                                "board": [
+                                    card.to_dict() for card in self.game.get_board()
+                                ]
+                            }
+                        )
+                        self.broadcast(response.encode(), client_socket)
+
                     elif action == "fichas":
                         response = json.dumps(
                             {
@@ -145,6 +155,7 @@ class PokerServer:
                             )
 
                     elif action == "check":
+                        player.set_has_played(True)
                         self.game.next_turn()
                         self.broadcast_game_state()
 
@@ -152,6 +163,7 @@ class PokerServer:
                         amount = self.game.get_current_bet()
                         if self.game.place_bet(player, amount):
                             self.game.next_turn()
+                            player.set_has_played(True)
                             self.broadcast_game_state()
                         else:
                             self.broadcast(
@@ -161,12 +173,14 @@ class PokerServer:
 
                     elif action == "fold":
                         player.fold()
+                        player.set_has_played(True)
                         self.game.next_turn()
                         self.broadcast_game_state()
 
                     elif action == "all_in":
                         amount = player.get_chips()
                         if self.game.place_bet(player, amount):
+                            player.set_has_played(True)
                             self.game.next_turn()
                             self.broadcast_game_state()
                         else:

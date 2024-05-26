@@ -45,10 +45,10 @@ class Game:
         doesn't have enough chips, True otherwise.
         """
         if amount >= self.__current_bet:
-            player.bet(amount)
             self.__pot += amount
             player.set_has_played(True)
             player.remove_chips(amount)
+            player.set_current_bet(amount)
             self.__current_bet = amount
             return True
         return False
@@ -77,12 +77,6 @@ class Game:
     def deal_river(self):
         self.__deck.deal_river(self.__board)
 
-    def check_next_round(self):
-        if all(
-            player.get_current_bet() == self.__current_bet for player in self.__players
-        ):
-            self.next_round()
-
     def add_vote_to_start(self):
         self.__votes_to_start += 1
 
@@ -101,12 +95,12 @@ class Game:
         while self.__players[self.__players_turn].get_folded():
             self.__players_turn = (self.__players_turn + 1) % len(self.__players)
         if self.__players_turn == 0:
-            if self.all_players_have_bet():
+            if self.all_active_players_have_bet():
                 self.next_round()
 
     def all_active_players_have_bet(self):
         return all(
-            player.get_has_played() and player.get_current_bet >= self.__current_bet
+            player.get_has_played() and player.get_current_bet() >= self.__current_bet
             for player in self.__players
             if not player.get_folded()
         )
@@ -118,11 +112,12 @@ class Game:
         for player in self.__players:
             player.set_has_played(False)
             player.set_folded(False)
+            player.reset_hand()
+            player.set_current_bet(0)
 
     def reset_round(self):
         self.__players_turn = 0
-        for player in self.__players:
-            player.reset_hand()
+        self.__current_bet = 0
         self.reset_players_action()
         self.__deck.build_new_deck()
         self.__deck.shuffle()
@@ -135,6 +130,7 @@ class Game:
 
         for player in self.__players:
             player.remove_chips(initial_bet)
+            player.set_current_bet(initial_bet)
             self.add_to_pot(initial_bet)
 
     def distribute_pot(self, winners):
