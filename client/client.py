@@ -95,6 +95,7 @@ def run_client():
             "bote",
             "fichas",
             "mesa",
+            "check",
         ]:
             client.send_message({"action": action})
         else:

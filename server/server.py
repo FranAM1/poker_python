@@ -145,6 +145,10 @@ class PokerServer:
                                 client_socket,
                             )
 
+                    elif action == "check":
+                        self.game.next_turn()
+                        self.broadcast_game_state()
+
                     elif action == "call":
                         amount = self.game.get_current_bet()
                         if self.game.place_bet(player, amount):

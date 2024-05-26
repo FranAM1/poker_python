@@ -1,12 +1,11 @@
 actions = (
     "acciones",
     "votar",
-    "apuesta",
     "salir",
     "mano",
     "bote",
     "fichas",
-    "pasar",
+    "check",
     "mesa",
     "raise",
     "call",
