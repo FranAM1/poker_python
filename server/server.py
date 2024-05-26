@@ -75,7 +75,10 @@ class PokerServer:
                             if self.game.has_started():
                                 self.broadcast(
                                     json.dumps(
-                                        {"game_started": "El juego ha comenzado!"}
+                                        {
+                                            "game_started": "El juego ha comenzado!",
+                                            "current_turn": self.game.get_current_player().get_name(),
+                                        }
                                     ).encode()
                                 )
                             else:
@@ -129,24 +132,6 @@ class PokerServer:
                         self.broadcast(message.encode(), client_socket)
 
                     # MARK: Player's turn
-                    elif action == "apuesta":
-                        amount = data["amount"]
-                        self.game.place_bet(player, amount)
-                        self.game.next_turn()
-
-                        response = json.dumps(
-                            {
-                                "player_chips": {
-                                    "name": player.get_name(),
-                                    "chips": player.get_chips(),
-                                    "bet": amount,
-                                },
-                                "pot": self.game.get_pot(),
-                                "player_turn_passed": self.game.get_current_player().get_name(),
-                            }
-                        )
-                        self.broadcast(response.encode())
-
                     elif action == "raise":
                         amount = data["amount"]
                         if self.game.place_bet(player, amount):
@@ -189,6 +174,14 @@ class PokerServer:
             self.game.get_players().remove(player)
             client_socket.close()
             print(f"El jugador {player.get_name()} ha salido.")
+
+    def broadcast_game_state(self):
+        state = {
+            "pot": self.game.get_pot(),
+            "board": [card.to_dict() for card in self.game.get_board()],
+            "current_turn": self.game.get_current_player().get_name(),
+        }
+        self.broadcast(json.dumps(state).encode())
 
     def start(self):
         while True:

@@ -50,15 +50,12 @@ class PokerClient:
                         board = [
                             Card(card["suit"], card["rank"]) for card in board_data
                         ]
+                        print("Cartas de la mesa: ")
                         print_cards_in_rows(board)
-                    if "player_turn_finished" in data:
-                        print(
-                            "El jugador ",
-                            data["player_turn_passed"],
-                            " ha acabado su turno.",
-                        )
                     if "folded" in data:
                         print(f'El jugador {data["folded"]} ha pasado.')
+                    if "current_turn" in data:
+                        print(f'Es el turno de {data["current_turn"]}')
                 else:
                     break
             except:

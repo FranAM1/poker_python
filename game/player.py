@@ -16,6 +16,16 @@ class Player:
         self.__folded = False
         self.__current_bet = 0
 
+    def to_dict(self):
+        return {
+            "name": self.__name,
+            "chips": self.__chips,
+            "hand": [card.to_dict() for card in self.__hand],
+            "voted_to_start": self.__voted_to_start,
+            "folded": self.__folded,
+            "current_bet": self.__current_bet,
+        }
+
     def __str__(self):
         return f"{self.get_name} tiene {self.get_chips} puntos."
 

@@ -68,6 +68,15 @@ class Game:
             self.determine_winner()
             self.reset_round()
 
+    def deal_flop(self):
+        self.__deck.deal_flop(self.__board)
+
+    def deal_turn(self):
+        self.__deck.deal_turn(self.__board)
+
+    def deal_river(self):
+        self.__deck.deal_river(self.__board)
+
     def check_next_round(self):
         if all(
             player.get_current_bet() == self.__current_bet for player in self.__players
