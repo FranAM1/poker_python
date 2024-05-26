@@ -17,7 +17,6 @@ class PokerClient:
                 message = self.client_socket.recv(1024)
                 if message:
                     data = json.loads(message.decode())
-
                     if "pot" in data:
                         print(f'Bote actual: {data["pot"]}')
                     if "player_chips" in data:
@@ -36,11 +35,13 @@ class PokerClient:
                     if "no_action" in data:
                         print(data["no_action"])
                     if "actions" in data:
+                        print("Acciones disponibles:")
                         for action in data["actions"]:
                             print(action)
                     if "hand" in data:
                         hand_data = data["hand"]
                         hand = [Card(card["suit"], card["rank"]) for card in hand_data]
+                        print("Tu mano:")
                         print_cards_in_rows(hand)
                     if "chips" in data:
                         print(f'Fichas restantes: {data["chips"]}')
@@ -50,12 +51,14 @@ class PokerClient:
                             Card(card["suit"], card["rank"]) for card in board_data
                         ]
                         print_cards_in_rows(board)
-                    if "player_turn_passed" in data:
+                    if "player_turn_finished" in data:
                         print(
                             "El jugador ",
                             data["player_turn_passed"],
-                            " ha pasado su turno.",
+                            " ha acabado su turno.",
                         )
+                    if "folded" in data:
+                        print(f'El jugador {data["folded"]} ha pasado.')
                 else:
                     break
             except:
@@ -77,31 +80,25 @@ def run_client():
     client.send_message(player_name)
 
     while True:
-        action = input('Escribe una accion (ver todas con "acciones"): ')
+        action = input('Escribe una accion (ver todas con "acciones"): \n')
 
-        if action == "acciones":
-            print("Acciones disponibles:")
-            client.send_message({"action": action})
-        elif action == "votar":
-            client.send_message({"action": action})
-        elif action == "apuesta":
-            amount = int(input("Escribe la cantidad que quieres apostar: "))
-            client.send_message({"action": action, "amount": amount})
-        elif action == "salir":
+        if action == "salir":
             client.send_message({"action": action})
             print("Desconectándose del servidor...")
             break
-        elif action == "mano":
-            print("Tu mano:")
-            client.send_message({"action": action})
-        elif action == "bote":
-            client.send_message({"action": action})
-        elif action == "fichas":
-            print("Fichas restantes:")
-            client.send_message({"action": action})
-        elif action == "pasar":
-            client.send_message({"action": action})
-        elif action == "mesa":
+        elif action == "raise":
+            amount = int(input("Escribe la cantidad que quieres apostar: "))
+            client.send_message({"action": action, "amount": amount})
+        elif action in [
+            "votar",
+            "acciones",
+            "call",
+            "fold",
+            "mano",
+            "bote",
+            "fichas",
+            "mesa",
+        ]:
             client.send_message({"action": action})
         else:
             client.send_message({"action": action})

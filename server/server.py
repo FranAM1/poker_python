@@ -131,8 +131,7 @@ class PokerServer:
                     # MARK: Player's turn
                     elif action == "apuesta":
                         amount = data["amount"]
-                        player.remove_chips(amount)
-                        self.game.add_to_pot(amount)
+                        self.game.place_bet(player, amount)
                         self.game.next_turn()
 
                         response = json.dumps(
@@ -148,14 +147,34 @@ class PokerServer:
                         )
                         self.broadcast(response.encode())
 
-                    elif action == "pasar":
+                    elif action == "raise":
+                        amount = data["amount"]
+                        if self.game.place_bet(player, amount):
+                            self.game.next_turn()
+                            self.broadcast_game_state()
+                        else:
+                            self.broadcast(
+                                {
+                                    "error": "Apuesta muy baja o no tienes suficientes fichas"
+                                }.encode(),
+                                client_socket,
+                            )
+
+                    elif action == "call":
+                        amount = self.game.get_current_bet()
+                        if self.game.place_bet(player, amount):
+                            self.game.next_turn()
+                            self.broadcast_game_state()
+                        else:
+                            self.broadcast(
+                                {"error": "Fichas insuficientes"}.encode(),
+                                client_socket,
+                            )
+
+                    elif action == "fold":
+                        player.fold()
                         self.game.next_turn()
-                        response = json.dumps(
-                            {
-                                "player_turn_passed": self.game.get_current_player().get_name(),
-                            }
-                        )
-                        self.broadcast(response.encode())
+                        self.broadcast_game_state()
 
                     else:
                         response = json.dumps({"no_action": "Accion no tratada"})

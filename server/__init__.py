@@ -8,6 +8,9 @@ actions = (
     "fichas",
     "pasar",
     "mesa",
+    "raise",
+    "call",
+    "fold",
 )
 
 
