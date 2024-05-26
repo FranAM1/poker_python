@@ -164,6 +164,17 @@ class PokerServer:
                         self.game.next_turn()
                         self.broadcast_game_state()
 
+                    elif action == "all_in":
+                        amount = player.get_chips()
+                        if self.game.place_bet(player, amount):
+                            self.game.next_turn()
+                            self.broadcast_game_state()
+                        else:
+                            self.broadcast(
+                                {"error": "Fichas insuficientes"}.encode(),
+                                client_socket,
+                            )
+
                     else:
                         response = json.dumps({"no_action": "Accion no tratada"})
                         self.broadcast(response.encode())

@@ -34,7 +34,7 @@ class Game:
         else:
             print("No se puede iniciar la partida. Faltan jugadores o votos.")
 
-    def place_bet(self, player, amount):
+    def place_bet(self, player: Player, amount):
         """
         Place a bet for the current player.
 
@@ -44,14 +44,14 @@ class Game:
         :return: False if the amount is less than the current bet or the player
         doesn't have enough chips, True otherwise.
         """
-        player_chips = player.get_chips()
-        if amount < self.__current_bet or player_chips < amount:
-            return False
-        else:
-            self.add_to_pot(amount)
+        if amount >= self.__current_bet:
+            player.bet(amount)
+            self.__pot += amount
+            player.set_has_played(True)
             player.remove_chips(amount)
             self.__current_bet = amount
             return True
+        return False
 
     def next_round(self):
         if self.__round_stage == ROUND_STATE["Pre-flop"]:
@@ -98,6 +98,18 @@ class Game:
 
     def next_turn(self):
         self.__players_turn = (self.__players_turn + 1) % len(self.__players)
+        while self.__players[self.__players_turn].get_folded():
+            self.__players_turn = (self.__players_turn + 1) % len(self.__players)
+        if self.__players_turn == 0:
+            if self.all_players_have_bet():
+                self.next_round()
+
+    def all_active_players_have_bet(self):
+        return all(
+            player.get_has_played() and player.get_current_bet >= self.__current_bet
+            for player in self.__players
+            if not player.get_folded()
+        )
 
     def get_current_player(self):
         return self.__players[self.__players_turn]
@@ -105,6 +117,7 @@ class Game:
     def reset_players_action(self):
         for player in self.__players:
             player.set_has_played(False)
+            player.set_folded(False)
 
     def reset_round(self):
         self.__players_turn = 0
