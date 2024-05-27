@@ -1,12 +1,15 @@
 from game import SUITS, RANKS
 
+
 # Escalera real de color
 def is_royal_flush(hand: list) -> bool:
     return is_straight_flush(hand) and hand[0].get_rank() == "10"
 
+
 # Escalera de color
 def is_straight_flush(hand: list) -> bool:
     return is_straight(hand) and is_flush(hand)
+
 
 # Poker
 def is_four_of_a_kind(hand: list) -> bool:
@@ -16,24 +19,25 @@ def is_four_of_a_kind(hand: list) -> bool:
             return True
     return False
 
+
 # Full
 def is_full_house(hand: list) -> bool:
     return is_three_of_a_kind(hand) and is_one_pair(hand)
+
 
 # Color
 def is_flush(hand: list) -> bool:
     suits = [card.get_suit() for card in hand]
     return len(set(suits)) == 1
 
+
 # Escalera
 def is_straight(hand: list) -> bool:
     ranks = [card.get_rank() for card in hand]
     ranks_values = [RANKS[rank] for rank in ranks]
     ranks_values.sort()
-    return ranks_values == list(range(
-        ranks_values[0], 
-        ranks_values[0] + 5
-    ))
+    return ranks_values == list(range(ranks_values[0], ranks_values[0] + 5))
+
 
 # Trio
 def is_three_of_a_kind(hand: list) -> bool:
@@ -42,6 +46,7 @@ def is_three_of_a_kind(hand: list) -> bool:
         if ranks.count(rank) == 3:
             return True
     return False
+
 
 # Doble pareja
 def is_two_pair(hand: list) -> bool:
@@ -52,6 +57,7 @@ def is_two_pair(hand: list) -> bool:
             pairs += 1
     return pairs == 2
 
+
 # Pareja
 def is_one_pair(hand: list) -> bool:
     ranks = [card.get_rank() for card in hand]
@@ -59,6 +65,7 @@ def is_one_pair(hand: list) -> bool:
         if ranks.count(rank) == 2:
             return True
     return False
+
 
 HAND_VALUES = {
     "royal_flush": is_royal_flush,
@@ -69,37 +76,38 @@ HAND_VALUES = {
     "straight": is_straight,
     "three_of_a_kind": is_three_of_a_kind,
     "two_pair": is_two_pair,
-    "one_pair": is_one_pair
+    "one_pair": is_one_pair,
 }
 
 HANDS_RANKING = {
-    'royal_flush': 10,
-    'straight_flush': 9,
-    'four_of_a_kind': 8,
-    'full_house': 7,
-    'flush': 6,
-    'straight': 5,
-    'three_of_a_kind': 4,
-    'two_pair': 3,
-    'one_pair': 2,
-    'high_card': 1
+    "royal_flush": 10,
+    "straight_flush": 9,
+    "four_of_a_kind": 8,
+    "full_house": 7,
+    "flush": 6,
+    "straight": 5,
+    "three_of_a_kind": 4,
+    "two_pair": 3,
+    "one_pair": 2,
+    "high_card": 1,
 }
 
 HANDS_TRANSLATION = {
-    'royal_flush': 'Escalera real de color',
-    'straight_flush': 'Escalera de color',
-    'four_of_a_kind': 'Poker',
-    'full_house': 'Full',
-    'flush': 'Color',
-    'straight': 'Escalera',
-    'three_of_a_kind': 'Trio',
-    'two_pair': 'Doble pareja',
-    'one_pair': 'Pareja',
-    'high_card': 'Carta alta'
+    "royal_flush": "Escalera real de color",
+    "straight_flush": "Escalera de color",
+    "four_of_a_kind": "Poker",
+    "full_house": "Full",
+    "flush": "Color",
+    "straight": "Escalera",
+    "three_of_a_kind": "Trio",
+    "two_pair": "Doble pareja",
+    "one_pair": "Pareja",
+    "high_card": "Carta alta",
 }
 
-def value_of_hand(hand:dict, board:dict):
-    
+
+def value_of_hand(hand: list, board: list):
+
     full_hand = hand + board
     value = "high_card"
 
@@ -110,7 +118,16 @@ def value_of_hand(hand:dict, board:dict):
 
     return HANDS_RANKING[value]
 
-def compare_hands(list_hands: list, board:dict):
+
+def get_hand_ranking_from_value(value: int):
+    for hand, ranking in HANDS_RANKING.items():
+        if ranking == value:
+            return HANDS_TRANSLATION[hand]
+
+    return None
+
+
+def compare_hands(list_hands: list, board: list):
     best_hand = list_hands[0]
     best_value = value_of_hand(best_hand, board)
 
@@ -121,15 +138,16 @@ def compare_hands(list_hands: list, board:dict):
         if value > best_value:
             best_hand = hand
             best_value = value
-            tied_hands = [hand]  
+            tied_hands = [hand]
         elif value == best_value:
-            tied_hands.append(hand)  
+            tied_hands.append(hand)
 
     if len(tied_hands) > 1:
         max_rank = max(card.get_rank() for hand in tied_hands for card in hand)
         tied_hands = [
-            hand for hand in tied_hands if max(card.get_rank() for card in hand) 
-            == max_rank
+            hand
+            for hand in tied_hands
+            if max(card.get_rank() for card in hand) == max_rank
         ]
 
     return tied_hands

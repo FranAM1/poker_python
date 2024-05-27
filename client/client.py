@@ -56,6 +56,15 @@ class PokerClient:
                         print(f'El jugador {data["folded"]} ha pasado.')
                     if "current_turn" in data:
                         print(f'Es el turno de {data["current_turn"]}')
+                    if "winners" in data:
+                        print("Ganadores:")
+                        print(data["winners"]["players"])
+                        print(
+                            f'{data["winners"]["players"]} con {data["winners"]["hand"]}'
+                        )
+                        print(
+                            f'El bote de {data["winners"]["pot"]} fichas se ha repartido.'
+                        )
                 else:
                     break
             except:

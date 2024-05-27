@@ -1,5 +1,6 @@
 from game.card import Card
 from . import print_cards_in_rows
+from utils.poker_logic import get_hand_ranking_from_value, value_of_hand
 
 
 class Player:
@@ -54,6 +55,10 @@ class Player:
 
     def print_hand(self):
         print_cards_in_rows(self.__hand)
+
+    def get_hand_ranking(self, board):
+        value = value_of_hand(self.__hand, board)
+        return get_hand_ranking_from_value(value)
 
     # MARK: - Getters and Setters
     def get_hand(self):

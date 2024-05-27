@@ -145,6 +145,8 @@ class PokerServer:
                         amount = data["amount"]
                         if self.game.place_bet(player, amount):
                             self.game.next_turn()
+                            player.set_has_played(True)
+                            self.check_winner()
                             self.broadcast_game_state()
                         else:
                             self.broadcast(
@@ -157,6 +159,8 @@ class PokerServer:
                     elif action == "check":
                         player.set_has_played(True)
                         self.game.next_turn()
+                        player.set_has_played(True)
+                        self.check_winner()
                         self.broadcast_game_state()
 
                     elif action == "call":
@@ -164,6 +168,7 @@ class PokerServer:
                         if self.game.place_bet(player, amount):
                             self.game.next_turn()
                             player.set_has_played(True)
+                            self.check_winner()
                             self.broadcast_game_state()
                         else:
                             self.broadcast(
@@ -175,6 +180,7 @@ class PokerServer:
                         player.fold()
                         player.set_has_played(True)
                         self.game.next_turn()
+                        self.check_winner()
                         self.broadcast_game_state()
 
                     elif action == "all_in":
@@ -182,6 +188,7 @@ class PokerServer:
                         if self.game.place_bet(player, amount):
                             player.set_has_played(True)
                             self.game.next_turn()
+                            self.check_winner()
                             self.broadcast_game_state()
                         else:
                             self.broadcast(
@@ -191,7 +198,7 @@ class PokerServer:
 
                     else:
                         response = json.dumps({"no_action": "Accion no tratada"})
-                        self.broadcast(response.encode())
+                        self.broadcast(response.encode(), client_socket)
 
                 else:
                     break
@@ -203,6 +210,27 @@ class PokerServer:
             if player in self.game.get_players():
                 self.game.get_players().remove(player)
             client_socket.close()
+
+    def check_winner(self):
+        if self.game.get_winners():
+            self.broadcast_winner(self.game.get_winners())
+            self.game.reset_round()
+
+    def broadcast_winner(self, winners):
+        if winners:
+            winner_names = [winner.get_name() for winner in winners]
+            response = json.dumps(
+                {
+                    "winners": {
+                        "players": winner_names,
+                        "pot": self.game.get_pot(),
+                        "hand": winners[0].get_hand_ranking(self.game.get_board()),
+                    }
+                }
+            )
+            print(f"El bote de {self.game.get_pot()} fichas se ha repartido.")
+            print(response)
+            self.broadcast(response.encode())
 
     def broadcast_game_state(self):
         state = {

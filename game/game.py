@@ -2,6 +2,7 @@ from game.player import Player
 from game.card import Card
 from game import ROUND_STATE
 from game.deck import Deck
+from utils.poker_logic import compare_hands
 
 
 class Game:
@@ -14,10 +15,12 @@ class Game:
     __players_turn: int
     __round_stage: int
     __current_bet: int
+    __winners: list[Player]
 
     def __init__(self):
         self.__players = []
         self.__board = []
+        self.__winners = []
         self.__pot = 0
         self.__started = False
         self.__votes_to_start = 0
@@ -66,7 +69,20 @@ class Game:
         elif self.__round_stage == ROUND_STATE["River"]:
             self.__round_stage = ROUND_STATE["Pre-flop"]
             self.determine_winner()
-            self.reset_round()
+
+    def determine_winner(self):
+        active_players = [
+            player for player in self.__players if not player.get_folded()
+        ]
+
+        hands = [player.get_hand() for player in active_players]
+
+        best_hands = compare_hands(hands, self.__board)
+        for player in active_players:
+            if player.get_hand() in best_hands:
+                self.__winners.append(player)
+
+        self.distribute_pot(self.__winners)
 
     def deal_flop(self):
         self.__deck.deal_flop(self.__board)
@@ -118,6 +134,8 @@ class Game:
     def reset_round(self):
         self.__players_turn = 0
         self.__current_bet = 0
+        self.__winners = []
+        self.__board = []
         self.reset_players_action()
         self.__deck.build_new_deck()
         self.__deck.shuffle()
@@ -175,3 +193,27 @@ class Game:
 
     def set_deck(self, deck):
         self.__deck = deck
+
+    def get_players_turn(self):
+        return self.__players_turn
+
+    def set_players_turn(self, players_turn):
+        self.__players_turn = players_turn
+
+    def get_round_stage(self):
+        return self.__round_stage
+
+    def set_round_stage(self, round_stage):
+        self.__round_stage = round_stage
+
+    def get_current_bet(self):
+        return self.__current_bet
+
+    def set_current_bet(self, current_bet):
+        self.__current_bet = current_bet
+
+    def get_winners(self):
+        return self.__winners
+
+    def set_winners(self, winners):
+        self.__winners = winners
