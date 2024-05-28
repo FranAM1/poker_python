@@ -60,12 +60,15 @@ class Game:
         if self.__round_stage == ROUND_STATE["Pre-flop"]:
             self.__round_stage += 1
             self.deal_flop()
+            self.reset_turn()
         elif self.__round_stage == ROUND_STATE["Flop"]:
             self.__round_stage += 1
             self.deal_turn()
+            self.reset_turn()
         elif self.__round_stage == ROUND_STATE["Turn"]:
             self.__round_stage += 1
             self.deal_river()
+            self.reset_turn()
         elif self.__round_stage == ROUND_STATE["River"]:
             self.__round_stage = ROUND_STATE["Pre-flop"]
             self.determine_winner()
@@ -123,6 +126,14 @@ class Game:
 
     def get_current_player(self):
         return self.__players[self.__players_turn]
+
+    def reset_turn(self):
+        self.__players_turn = 0
+        self.__current_bet = 0
+        for player in self.__players:
+            player.set_has_played(False)
+            player.set_current_bet(0)
+            player.set_folded(False)
 
     def reset_players_action(self):
         for player in self.__players:

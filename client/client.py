@@ -65,6 +65,8 @@ class PokerClient:
                         print(
                             f'El bote de {data["winners"]["pot"]} fichas se ha repartido.'
                         )
+                    if "error" in data:
+                        print(data["error"])
                 else:
                     break
             except:

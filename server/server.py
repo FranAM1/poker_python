@@ -142,29 +142,49 @@ class PokerServer:
 
                     # MARK: Player's turn
                     elif action == "raise":
-                        amount = data["amount"]
-                        if self.game.place_bet(player, amount):
-                            self.game.next_turn()
-                            player.set_has_played(True)
-                            self.check_winner()
-                            self.broadcast_game_state()
-                        else:
+                        amount = int(data["amount"])
+                        print(amount)
+                        print(player.get_chips())
+                        print(amount > player.get_chips())
+                        if amount > player.get_chips():
                             self.broadcast(
-                                {
-                                    "error": "Apuesta muy baja o no tienes suficientes fichas"
-                                }.encode(),
+                                json.dumps({"error": "Fichas insuficientes"}).encode(),
                                 client_socket,
                             )
+                        else:
+                            if self.game.place_bet(player, amount):
+                                self.game.next_turn()
+                                player.set_has_played(True)
+                                self.check_winner()
+                                self.broadcast_game_state()
+                            else:
+                                self.broadcast(
+                                    json.dumps(
+                                        {"error": "Fichas insuficientes"}
+                                    ).encode(),
+                                    client_socket,
+                                )
 
                     elif action == "check":
-                        player.set_has_played(True)
-                        self.game.next_turn()
-                        player.set_has_played(True)
-                        self.check_winner()
-                        self.broadcast_game_state()
+                        if player.get_current_bet() < self.game.get_current_bet():
+                            self.broadcast(
+                                json.dumps(
+                                    {
+                                        "error": "No puedes hacer check porque hay una apuesta superior a la tuya"
+                                    }
+                                ).encode(),
+                                client_socket,
+                            )
+                        else:
+                            player.set_has_played(True)
+                            self.game.next_turn()
+                            self.check_winner()
+                            self.broadcast_game_state()
 
                     elif action == "call":
                         amount = self.game.get_current_bet()
+                        if amount > player.get_chips():
+                            amount = player.get_chips()
                         if self.game.place_bet(player, amount):
                             self.game.next_turn()
                             player.set_has_played(True)
