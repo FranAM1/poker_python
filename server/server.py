@@ -238,7 +238,7 @@ class PokerServer:
 
     def broadcast_winner(self, winners):
         if winners:
-            winner_names = [winner.get_name() for winner in winners]
+            winner_names = [winner.get_name().strip('"') for winner in winners]
             response = json.dumps(
                 {
                     "winners": {
@@ -249,7 +249,6 @@ class PokerServer:
                 }
             )
             print(f"El bote de {self.game.get_pot()} fichas se ha repartido.")
-            print(response)
             self.broadcast(response.encode())
 
     def broadcast_game_state(self):

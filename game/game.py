@@ -148,6 +148,7 @@ class Game:
         self.__winners = []
         self.__board = []
         self.reset_players_action()
+        self.reset_pot()
         self.__deck.build_new_deck()
         self.__deck.shuffle()
         self.__deck.deal(self.__players)
@@ -159,7 +160,6 @@ class Game:
 
         for player in self.__players:
             player.remove_chips(initial_bet)
-            player.set_current_bet(initial_bet)
             self.add_to_pot(initial_bet)
 
     def distribute_pot(self, winners):
@@ -168,8 +168,6 @@ class Game:
             winnings = self.__pot // len(winners)
             for winner in winners:
                 winner.add_chips(winnings)
-
-            self.reset_pot()
 
     # MARK: - Getters and Setters
     def get_players(self):
