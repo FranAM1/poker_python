@@ -45,12 +45,12 @@ class Game:
         :param amount: The amount to bet.
 
         :return: False if the amount is less than the current bet or the player
-        doesn't have enough chips, True otherwise.
+        doesn't have enough chips to keep playing, True otherwise.
         """
         if amount >= self.__current_bet:
+            player.remove_chips(amount)
             self.__pot += amount
             player.set_has_played(True)
-            player.remove_chips(amount)
             player.set_current_bet(amount)
             self.__current_bet = amount
             return True
@@ -117,6 +117,13 @@ class Game:
             if self.all_active_players_have_bet():
                 self.next_round()
 
+        active_players = [
+            player for player in self.__players if not player.get_folded()
+        ]
+        if len(active_players) == 1:
+            self.__winners.append(active_players[0])
+            self.distribute_pot(self.__winners)
+
     def all_active_players_have_bet(self):
         return all(
             player.get_has_played() and player.get_current_bet() >= self.__current_bet
@@ -143,6 +150,11 @@ class Game:
             player.set_current_bet(0)
 
     def reset_round(self):
+        for player in self.__players[:]:
+            if player.get_chips() <= 0:
+                self.__players.remove(player)
+                player.set_has_lost(True)
+
         self.__players_turn = 0
         self.__current_bet = 0
         self.__winners = []

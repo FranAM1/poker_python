@@ -66,6 +66,9 @@ class PokerClient:
                         )
                     if "error" in data:
                         print(data["error"])
+                    if "loser" in data:
+                        print(f'El jugador {data["loser"]} ha perdido.')
+
                 else:
                     break
             except:

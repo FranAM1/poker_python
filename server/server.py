@@ -235,6 +235,7 @@ class PokerServer:
         if self.game.get_winners():
             self.broadcast_winner(self.game.get_winners())
             self.game.reset_round()
+            self.handle_end_of_round()
 
     def broadcast_winner(self, winners):
         if winners:
@@ -263,6 +264,28 @@ class PokerServer:
         if all(player.get_has_played() for player in self.game.get_players()):
             self.game.next_round()
             self.broadcast_game_state()
+
+    def handle_end_of_round(self):
+        clients_to_remove = []
+        for client_socket in list(self.clients.keys()):
+            client_player = self.clients[client_socket]
+            if client_player.get_has_lost():
+                clients_to_remove.append(client_socket)
+                self.broadcast(
+                    json.dumps(
+                        {
+                            "loser": client_player.get_name(),
+                        }
+                    ).encode()
+                )
+
+        for client_socket in clients_to_remove:
+            client_socket.close()
+
+        for client_socket in clients_to_remove:
+            print("clinetes 1: ", self.clients)
+            del self.clients[client_socket]
+            print("clientes 2: ", self.clients)
 
     def start(self):
         while True:

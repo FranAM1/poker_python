@@ -9,6 +9,7 @@ class Player:
     __folded: bool
     __current_bet: int
     __has_played: bool
+    __has_lost: bool
 
     def __init__(self, name):
         self.__name = name
@@ -18,6 +19,7 @@ class Player:
         self.__folded = False
         self.__current_bet = 0
         self.__has_played = False
+        self.__has_lost = False
 
     def to_dict(self):
         return {
@@ -102,3 +104,9 @@ class Player:
 
     def set_has_played(self, has_played):
         self.__has_played = has_played
+
+    def get_has_lost(self):
+        return self.__has_lost
+
+    def set_has_lost(self, has_lost):
+        self.__has_lost = has_lost
