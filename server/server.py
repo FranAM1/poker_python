@@ -87,7 +87,7 @@ class PokerServer:
                     }
                 ).encode(),
             )
-        elif player.get_has_lost():
+        elif player.has_lost():
             self.send_message_to_client(
                 client_socket,
                 json.dumps(
@@ -276,7 +276,7 @@ class PokerServer:
         self.check_for_losers()
 
         active_players = [
-            player for player in self.clients.values() if not player.get_has_lost()
+            player for player in self.clients.values() if not player.has_lost()
         ]
         print(f"Jugadores activos: {[player.get_name() for player in active_players]}")
 
@@ -296,7 +296,7 @@ class PokerServer:
     def check_for_losers(self):
         for client_socket in list(self.clients.keys()):
             client_player = self.clients[client_socket]
-            if client_player.get_has_lost():
+            if client_player.has_lost():
                 self.send_message_to_client(
                     client_socket,
                     json.dumps({"loser": client_player.get_name()}).encode(),

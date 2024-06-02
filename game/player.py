@@ -105,10 +105,10 @@ class Player:
     def set_has_played(self, has_played):
         self.__has_played = has_played
 
-    def get_has_lost(self):
+    def has_lost(self):
         return self.__has_lost
 
-    def set_has_lost(self, has_lost):
+    def set_lost(self, has_lost):
         self.__has_lost = has_lost
 
     def has_voted(self):

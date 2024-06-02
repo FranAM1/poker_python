@@ -183,7 +183,7 @@ class Game:
                 self.add_to_pot(player.get_chips())
                 player.set_chips(0)
             else:
-                player.set_has_lost(True)
+                player.set_lost(True)
 
     def distribute_pot(self, winners):
         """Distribute the pot to the winner(s)."""
