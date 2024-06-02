@@ -12,6 +12,7 @@ from utils.poker_logic import (
     is_two_pair,
     is_one_pair,
     value_of_hand,
+    get_hand_ranking_from_value,
 )
 
 
@@ -164,5 +165,35 @@ class TestHand(unittest.TestCase):
         best_hands = [hand2, hand3]
 
         result_hands = compare_hands(list_hands, board)
+
+        self.assertEqual(best_hands, result_hands)
+
+    def test_compare_hands_with_tie_in_board(self):
+        hand1 = [Card("clubs", "8"), Card("spades", "7")]
+
+        hand2 = [Card("hearts", "K"), Card("diamonds", "A")]
+
+        hand3 = [Card("clubs", "5"), Card("spades", "A")]
+
+        hand4 = [Card("hearts", "3"), Card("diamonds", "4")]
+
+        board = [
+            Card("spades", "10"),
+            Card("diamonds", "J"),
+            Card("hearts", "Q"),
+            Card("spades", "2"),
+            Card("hearts", "10"),
+        ]
+
+        list_hands = [hand1, hand2, hand3, hand4]
+        best_hands = [hand2]
+
+        print(get_hand_ranking_from_value(value_of_hand(hand2, board)))
+
+        result_hands = compare_hands(list_hands, board)
+
+        print(result_hands)
+
+        print(best_hands)
 
         self.assertEqual(best_hands, result_hands)

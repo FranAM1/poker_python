@@ -39,13 +39,12 @@ class PokerServer:
             self.game.add_player(player)
             self.clients[client_socket] = player
             print(f"El jugador {player_name} se ha unido.")
-            self.send_message_to_client(
-                client_socket,
+            self.broadcast(
                 json.dumps(
                     {
-                        "success": "Te has unido al juego. Espera a que comience el juego."
+                        "player_joined": f"{player_name} se ha unido al juego. Jugadores actuales: {len(self.clients)}/{self.max_players}"
                     }
-                ).encode(),
+                ).encode()
             )
 
             while True:
@@ -194,6 +193,7 @@ class PokerServer:
 
     def handle_fold_action(self, player):
         player.fold()
+        self.broadcast(json.dumps({"folded": player.get_name()}).encode())
         self.advance_game(player)
 
     def handle_all_in_action(self, player, client_socket):

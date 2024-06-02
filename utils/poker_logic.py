@@ -111,8 +111,10 @@ def value_of_hand(hand: list, board: list):
     full_hand = hand + board
     value = "high_card"
 
-    for hand_value, function in HAND_VALUES.items():
-        if function(full_hand):
+    # Logica para ordenar las claves de HAND_VALUES de mayor a menor para evitar
+    # que una escalera de color se detecte como una escalera o que un full se detecte como un trio
+    for hand_value in sorted(HAND_VALUES, key=lambda x: HANDS_RANKING[x], reverse=True):
+        if HAND_VALUES[hand_value](full_hand):
             value = hand_value
             break
 

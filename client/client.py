@@ -50,8 +50,8 @@ class PokerClient:
                             ]
                             print("Tu mano:")
                             print_cards_in_rows(hand)
-                        if "success" in data:
-                            print(data["success"])
+                        if "player_joined" in data:
+                            print(data["player_joined"])
                         if "chips" in data:
                             print(f'Fichas restantes: {data["chips"]}')
                         if "board" in data:
@@ -62,7 +62,7 @@ class PokerClient:
                             print("Cartas de la mesa: ")
                             print_cards_in_rows(board)
                         if "folded" in data:
-                            print(f'El jugador {data["folded"]} ha pasado.')
+                            print(f'El jugador {data["folded"]} ha foldedado.')
                         if "current_turn" in data:
                             print(f'Es el turno de {data["current_turn"]}')
                         if "winners" in data:
