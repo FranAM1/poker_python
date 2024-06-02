@@ -18,20 +18,19 @@ class PokerServer:
 
     def broadcast(self, message, sender_socket=None):
         if sender_socket:
-            try:
-                sender_socket.sendall(message)
-            except:
-                print("Error enviando mensaje al cliente.")
-                sender_socket.close()
-                del self.clients[sender_socket]
+            self.send_message_to_client(sender_socket, message)
         else:
             for client in self.clients:
-                try:
-                    client.sendall(message)
-                except:
-                    print("Error enviando mensaje al cliente.")
-                    client.close()
-                    del self.clients[client]
+                self.send_message_to_client(client, message)
+
+    def send_message_to_client(self, client_socket, message):
+        try:
+            client_socket.sendall(message)
+        except:
+            print("Error enviando mensaje al cliente.")
+            client_socket.close()
+            if client_socket in self.clients:
+                del self.clients[client_socket]
 
     def handle_client(self, client_socket):
         try:
@@ -40,200 +39,214 @@ class PokerServer:
             self.game.add_player(player)
             self.clients[client_socket] = player
             print(f"El jugador {player_name} se ha unido.")
-            self.broadcast(
+            self.send_message_to_client(
+                client_socket,
                 json.dumps(
                     {
                         "success": "Te has unido al juego. Espera a que comience el juego."
                     }
-                ).encode()
+                ).encode(),
             )
 
             while True:
                 message = client_socket.recv(1024)
-                if message:
-                    decoded_message = message.decode()
-                    data = json.loads(decoded_message)
-                    action = data["action"]
-                    player: Player = self.clients[client_socket]
-                    print(f"Recibido de {player.get_name()}: {action}")
-
-                    if action == "votar":
-                        if player.get_voted_to_start():
-                            response = json.dumps(
-                                {"voted": "Ya has votado para comenzar el juego."}
-                            )
-                            self.broadcast(response.encode(), client_socket)
-                        else:
-                            self.game.add_vote_to_start()
-                            player.voted_to_start()
-                            print(
-                                f"Voto recibido de {player.get_name()}.  Votos totales: {self.game.get_votes_to_start()}"
-                            )
-                            self.game.start()
-
-                            if self.game.has_started():
-                                self.broadcast(
-                                    json.dumps(
-                                        {
-                                            "game_started": "El juego ha comenzado!",
-                                            "current_turn": self.game.get_current_player().get_name(),
-                                        }
-                                    ).encode()
-                                )
-                            else:
-                                self.broadcast(
-                                    json.dumps(
-                                        {
-                                            "game_not_started": f"Voto recibido de {player.get_name()}. Esperando votos de otros jugadores."
-                                        }
-                                    ).encode()
-                                )
-
-                    elif action == "acciones":
-                        response = json.dumps({"actions": actions})
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "salir":
-                        break
-
-                    elif not self.game.has_started():
-                        message = json.dumps(
-                            {
-                                "game_not_started": "El juego no ha comenzado. No se permiten acciones hasta que comience el juego."
-                            }
-                        )
-                        self.broadcast(message.encode(), client_socket)
-
-                    # MARK: All turns
-                    elif action == "mano":
-                        player_hand = player.get_hand()
-                        hand = [card.to_dict() for card in player_hand]
-                        response = json.dumps({"hand": hand})
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "bote":
-                        response = json.dumps({"pot": self.game.get_pot()})
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "mesa":
-                        response = json.dumps(
-                            {
-                                "board": [
-                                    card.to_dict() for card in self.game.get_board()
-                                ]
-                            }
-                        )
-                        self.broadcast(response.encode(), client_socket)
-
-                    elif action == "fichas":
-                        response = json.dumps(
-                            {
-                                "chips": player.get_chips(),
-                            }
-                        )
-                        self.broadcast(response.encode(), client_socket)
-
-                    # MARK: Validate player's turn
-                    elif not validate_users_turn(self.game, player):
-                        message = json.dumps(
-                            {"not_your_turn": "No es tu turno de jugar."}
-                        )
-                        self.broadcast(message.encode(), client_socket)
-
-                    # MARK: Player's turn
-                    elif action == "raise":
-                        amount = int(data["amount"])
-                        print(amount)
-                        print(player.get_chips())
-                        print(amount > player.get_chips())
-                        if amount > player.get_chips():
-                            self.broadcast(
-                                json.dumps({"error": "Fichas insuficientes"}).encode(),
-                                client_socket,
-                            )
-                        else:
-                            if self.game.place_bet(player, amount):
-                                self.game.next_turn()
-                                player.set_has_played(True)
-                                self.check_winner()
-                                self.broadcast_game_state()
-                            else:
-                                self.broadcast(
-                                    json.dumps(
-                                        {"error": "Fichas insuficientes"}
-                                    ).encode(),
-                                    client_socket,
-                                )
-
-                    elif action == "check":
-                        if player.get_current_bet() < self.game.get_current_bet():
-                            self.broadcast(
-                                json.dumps(
-                                    {
-                                        "error": "No puedes hacer check porque hay una apuesta superior a la tuya"
-                                    }
-                                ).encode(),
-                                client_socket,
-                            )
-                        else:
-                            player.set_has_played(True)
-                            self.game.next_turn()
-                            self.check_winner()
-                            self.broadcast_game_state()
-
-                    elif action == "call":
-                        amount = self.game.get_current_bet()
-                        if amount > player.get_chips():
-                            amount = player.get_chips()
-                        if self.game.place_bet(player, amount):
-                            self.game.next_turn()
-                            player.set_has_played(True)
-                            self.check_winner()
-                            self.broadcast_game_state()
-                        else:
-                            self.broadcast(
-                                {"error": "Fichas insuficientes"}.encode(),
-                                client_socket,
-                            )
-
-                    elif action == "fold":
-                        player.fold()
-                        player.set_has_played(True)
-                        self.game.next_turn()
-                        self.check_winner()
-                        self.broadcast_game_state()
-
-                    elif action == "all_in":
-                        amount = player.get_chips()
-                        if self.game.place_bet(player, amount):
-                            player.set_has_played(True)
-                            self.game.next_turn()
-                            self.check_winner()
-                            self.broadcast_game_state()
-                        else:
-                            self.broadcast(
-                                {"error": "Fichas insuficientes"}.encode(),
-                                client_socket,
-                            )
-
-                    else:
-                        response = json.dumps({"no_action": "Accion no tratada"})
-                        self.broadcast(response.encode(), client_socket)
-
-                else:
+                if not message:
                     break
+
+                decoded_message = message.decode()
+                data = json.loads(decoded_message)
+                action = data.get("action")
+                player = self.clients[client_socket]
+                print(f"Recibido de {player.get_name()}: {action}")
+
+                self.process_action(action, data, player, client_socket)
+
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"Error en los datos recibidos: {e}")
         except Exception as e:
-            print(f"Error handling client: {e}")
+            print(f"Error manejando el cliente: {e}")
         finally:
-            if client_socket in self.clients:
-                del self.clients[client_socket]
-            if player in self.game.get_players():
-                self.game.get_players().remove(player)
-            client_socket.close()
+            self.cleanup_client(client_socket, player)
+
+    def process_action(self, action, data, player, client_socket):
+        if action == "votar":
+            self.handle_vote_action(player, client_socket)
+        elif action == "acciones":
+            self.send_message_to_client(
+                client_socket, json.dumps({"actions": actions}).encode()
+            )
+        elif action == "salir":
+            self.game.remove_player(player)
+            self.cleanup_client(client_socket, player)
+        elif not self.game.has_started():
+            self.send_message_to_client(
+                client_socket,
+                json.dumps(
+                    {
+                        "game_not_started": "El juego no ha comenzado. No se permiten acciones hasta que comience el juego."
+                    }
+                ).encode(),
+            )
+        elif player.get_has_lost():
+            self.send_message_to_client(
+                client_socket,
+                json.dumps(
+                    {"has_lost": "Has perdido no puedes seguir jugando."}
+                ).encode(),
+            )
+        else:
+            self.process_game_action(action, data, player, client_socket)
+
+    def handle_vote_action(self, player, client_socket):
+        if player.get_voted_to_start():
+            self.send_message_to_client(
+                client_socket,
+                json.dumps({"voted": "Ya has votado para comenzar el juego."}).encode(),
+            )
+        else:
+            self.game.add_vote_to_start()
+            player.voted_to_start()
+            print(
+                f"Voto recibido de {player.get_name()}. Votos totales: {self.game.get_votes_to_start()}"
+            )
+            if self.game.has_started():
+                self.broadcast(
+                    json.dumps(
+                        {
+                            "game_started": "El juego ha comenzado!",
+                            "current_turn": self.game.get_current_player().get_name(),
+                        }
+                    ).encode()
+                )
+            else:
+                self.broadcast(
+                    json.dumps(
+                        {
+                            "game_not_started": f"Voto recibido de {player.get_name()}. Esperando votos de otros jugadores."
+                        }
+                    ).encode()
+                )
+
+    def process_game_action(self, action, data, player, client_socket):
+        if action in ["mano", "bote", "mesa", "fichas"]:
+            self.handle_information_request(action, player, client_socket)
+        elif not validate_users_turn(self.game, player):
+            self.send_message_to_client(
+                client_socket,
+                json.dumps({"not_your_turn": "No es tu turno de jugar."}).encode(),
+            )
+        elif action in ["raise", "check", "call", "fold", "all_in"]:
+            self.handle_player_turn(action, data, player, client_socket)
+
+    def handle_player_turn(self, action, data, player, client_socket):
+        if action == "raise":
+            amount = int(data["amount"])
+            self.handle_raise_action(amount, player, client_socket)
+        elif action == "check":
+            self.handle_check_action(player, client_socket)
+        elif action == "call":
+            self.handle_call_action(player, client_socket)
+        elif action == "fold":
+            self.handle_fold_action(player)
+        elif action == "all_in":
+            self.handle_all_in_action(player, client_socket)
+        else:
+            self.send_message_to_client(
+                client_socket,
+                json.dumps({"error": "Accion no tratada"}).encode(),
+            )
+
+    def handle_raise_action(self, amount, player, client_socket):
+        if amount > player.get_chips():
+            self.send_message_to_client(
+                client_socket, json.dumps({"error": "Fichas insuficientes"}).encode()
+            )
+        else:
+            if self.game.place_bet(player, amount):
+                self.advance_game(player)
+            else:
+                self.send_message_to_client(
+                    client_socket,
+                    json.dumps({"error": "Fichas insuficientes"}).encode(),
+                )
+
+    def handle_check_action(self, player, client_socket):
+        if player.get_current_bet() < self.game.get_current_bet():
+            self.send_message_to_client(
+                client_socket,
+                json.dumps(
+                    {
+                        "error": "No puedes hacer check porque hay una apuesta superior a la tuya"
+                    }
+                ).encode(),
+            )
+        else:
+            self.advance_game(player)
+
+    def handle_call_action(self, player, client_socket):
+        amount = min(self.game.get_current_bet(), player.get_chips())
+        if self.game.place_bet(player, amount):
+            self.advance_game(player)
+        else:
+            self.send_message_to_client(
+                client_socket, json.dumps({"error": "Fichas insuficientes"}).encode()
+            )
+
+    def handle_fold_action(self, player):
+        player.fold()
+        self.advance_game(player)
+
+    def handle_all_in_action(self, player, client_socket):
+        amount = player.get_chips()
+        if self.game.place_bet(player, amount):
+            self.advance_game(player)
+        else:
+            self.send_message_to_client(
+                client_socket, json.dumps({"error": "Fichas insuficientes"}).encode()
+            )
+
+    def handle_information_request(self, action, player, client_socket):
+        if action == "mano":
+            hand = [card.to_dict() for card in player.get_hand()]
+            self.send_message_to_client(
+                client_socket, json.dumps({"hand": hand}).encode()
+            )
+        elif action == "bote":
+            self.send_message_to_client(
+                client_socket, json.dumps({"pot": self.game.get_pot()}).encode()
+            )
+        elif action == "mesa":
+            board = [card.to_dict() for card in self.game.get_board()]
+            self.send_message_to_client(
+                client_socket, json.dumps({"board": board}).encode()
+            )
+        elif action == "fichas":
+            self.send_message_to_client(
+                client_socket, json.dumps({"chips": player.get_chips()}).encode()
+            )
+        else:
+            self.send_message_to_client(
+                client_socket, json.dumps({"error": "Accion no tratada"}).encode()
+            )
+
+    def advance_game(self, player):
+        player.set_has_played(True)
+        self.game.next_turn()
+        self.check_winner()
+        if self.game.has_started():
+            self.broadcast_game_state()
+
+    def cleanup_client(self, client_socket, player):
+        if client_socket in self.clients:
+            del self.clients[client_socket]
+        if player in self.game.get_players():
+            self.game.get_players().remove(player)
+        client_socket.close()
 
     def check_winner(self):
-        if self.game.get_winners():
-            self.broadcast_winner(self.game.get_winners())
+        winners = self.game.get_winners()
+        if winners:
+            self.broadcast_winner(winners)
             self.game.reset_round()
             self.handle_end_of_round()
 
@@ -249,7 +262,6 @@ class PokerServer:
                     }
                 }
             )
-            print(f"El bote de {self.game.get_pot()} fichas se ha repartido.")
             self.broadcast(response.encode())
 
     def broadcast_game_state(self):
@@ -260,32 +272,36 @@ class PokerServer:
         }
         self.broadcast(json.dumps(state).encode())
 
-    def check_and_advance_round(self):
-        if all(player.get_has_played() for player in self.game.get_players()):
-            self.game.next_round()
-            self.broadcast_game_state()
-
     def handle_end_of_round(self):
-        clients_to_remove = []
+        self.check_for_losers()
+
+        active_players = [
+            player for player in self.clients.values() if not player.get_has_lost()
+        ]
+        print(f"Jugadores activos: {[player.get_name() for player in active_players]}")
+
+        if len(active_players) == 1:
+            player_name = active_players[0].get_name()
+            print(f"El jugador {player_name} es el ganador.")
+            message = json.dumps(
+                {
+                    "game_over": "Fin del juego. Ganador: " + player_name,
+                }
+            ).encode()
+            self.broadcast(message)
+            print("Fin del juego.")
+            self.game.set_started(False)
+            self.game.reset_player_votes()
+
+    def check_for_losers(self):
         for client_socket in list(self.clients.keys()):
             client_player = self.clients[client_socket]
             if client_player.get_has_lost():
-                clients_to_remove.append(client_socket)
-                self.broadcast(
-                    json.dumps(
-                        {
-                            "loser": client_player.get_name(),
-                        }
-                    ).encode()
+                self.send_message_to_client(
+                    client_socket,
+                    json.dumps({"loser": client_player.get_name()}).encode(),
                 )
-
-        for client_socket in clients_to_remove:
-            client_socket.close()
-
-        for client_socket in clients_to_remove:
-            print("clinetes 1: ", self.clients)
-            del self.clients[client_socket]
-            print("clientes 2: ", self.clients)
+                print(f"El jugador {client_player.get_name()} ha perdido.")
 
     def start(self):
         while True:
@@ -294,8 +310,9 @@ class PokerServer:
                 print(
                     f"Conexión rechazada de {client_address}. Máximo de jugadores alcanzado."
                 )
-                client_socket.sendall(
-                    json.dumps({"error": "Máximo de jugadores alcanzado."}).encode()
+                self.send_message_to_client(
+                    client_socket,
+                    json.dumps({"error": "Máximo de jugadores alcanzado."}).encode(),
                 )
                 client_socket.close()
                 continue
@@ -304,8 +321,9 @@ class PokerServer:
                 print(
                     f"Conexión rechazada de {client_address}. El juego ya ha comenzado."
                 )
-                client_socket.sendall(
-                    json.dumps({"error": "El juego ya ha comenzado."}).encode()
+                self.send_message_to_client(
+                    client_socket,
+                    json.dumps({"error": "El juego ya ha comenzado."}).encode(),
                 )
                 client_socket.close()
                 continue

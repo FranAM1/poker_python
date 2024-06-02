@@ -33,6 +33,7 @@ class Game:
         if len(self.__players) > 1 and self.__votes_to_start >= len(self.__players):
             self.__started = True
             print("Juego iniciado!")
+            self.reset_players_chips()
             self.reset_round()
         else:
             print("No se puede iniciar la partida. Faltan jugadores o votos.")
@@ -96,8 +97,17 @@ class Game:
     def deal_river(self):
         self.__deck.deal_river(self.__board)
 
+    def remove_player(self, player):
+        self.__players.remove(player)
+
+    def reset_players_chips(self):
+        for player in self.__players:
+            player.set_chips(200)
+
     def add_vote_to_start(self):
         self.__votes_to_start += 1
+        if self.__votes_to_start >= len(self.__players):
+            self.start()
 
     def add_player(self, player):
         self.__players.append(player)
@@ -110,19 +120,19 @@ class Game:
         self.__pot = 0
 
     def next_turn(self):
-        self.__players_turn = (self.__players_turn + 1) % len(self.__players)
-        while self.__players[self.__players_turn].get_folded():
-            self.__players_turn = (self.__players_turn + 1) % len(self.__players)
-        if self.__players_turn == 0:
-            if self.all_active_players_have_bet():
-                self.next_round()
-
         active_players = [
             player for player in self.__players if not player.get_folded()
         ]
         if len(active_players) == 1:
             self.__winners.append(active_players[0])
             self.distribute_pot(self.__winners)
+        else:
+            self.__players_turn = (self.__players_turn + 1) % len(self.__players)
+            while self.__players[self.__players_turn].get_folded():
+                self.__players_turn = (self.__players_turn + 1) % len(self.__players)
+            if self.__players_turn == 0:
+                if self.all_active_players_have_bet():
+                    self.next_round()
 
     def all_active_players_have_bet(self):
         return all(
@@ -150,11 +160,6 @@ class Game:
             player.set_current_bet(0)
 
     def reset_round(self):
-        for player in self.__players[:]:
-            if player.get_chips() <= 0:
-                self.__players.remove(player)
-                player.set_has_lost(True)
-
         self.__players_turn = 0
         self.__current_bet = 0
         self.__winners = []
@@ -171,8 +176,14 @@ class Game:
         initial_bet = 50
 
         for player in self.__players:
-            player.remove_chips(initial_bet)
-            self.add_to_pot(initial_bet)
+            if player.get_chips() >= initial_bet:
+                player.remove_chips(initial_bet)
+                self.add_to_pot(initial_bet)
+            elif player.get_chips() > 0:
+                self.add_to_pot(player.get_chips())
+                player.set_chips(0)
+            else:
+                player.set_has_lost(True)
 
     def distribute_pot(self, winners):
         """Distribute the pot to the winner(s)."""
@@ -202,6 +213,15 @@ class Game:
 
     def has_started(self):
         return self.__started
+
+    def set_started(self, started):
+        self.__started = started
+
+    def reset_player_votes(self):
+        self.__votes_to_start = 0
+
+        for player in self.__players:
+            player.set_voted(False)
 
     def get_votes_to_start(self):
         return self.__votes_to_start

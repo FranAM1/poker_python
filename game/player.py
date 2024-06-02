@@ -13,7 +13,7 @@ class Player:
 
     def __init__(self, name):
         self.__name = name
-        self.__chips = 500
+        self.__chips = 100
         self.__hand = []
         self.__voted_to_start = False
         self.__folded = False
@@ -110,3 +110,9 @@ class Player:
 
     def set_has_lost(self, has_lost):
         self.__has_lost = has_lost
+
+    def has_voted(self):
+        return self.__voted_to_start
+
+    def set_voted(self, voted):
+        self.__voted_to_start = voted
