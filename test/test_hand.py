@@ -19,6 +19,8 @@ from utils.poker_logic import (
 class TestHand(unittest.TestCase):
     def test_royal_flush(self):
         hand = [
+            Card("diamonds", "2"),
+            Card("spades", "A"),
             Card("hearts", "10"),
             Card("hearts", "J"),
             Card("hearts", "Q"),
@@ -34,6 +36,8 @@ class TestHand(unittest.TestCase):
             Card("hearts", "Q"),
             Card("hearts", "K"),
             Card("hearts", "9"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_straight_flush(hand))
 
@@ -44,6 +48,8 @@ class TestHand(unittest.TestCase):
             Card("clubs", "10"),
             Card("spades", "10"),
             Card("hearts", "9"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_four_of_a_kind(hand))
 
@@ -54,6 +60,8 @@ class TestHand(unittest.TestCase):
             Card("clubs", "10"),
             Card("spades", "9"),
             Card("hearts", "9"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_full_house(hand))
 
@@ -64,6 +72,8 @@ class TestHand(unittest.TestCase):
             Card("hearts", "Q"),
             Card("hearts", "K"),
             Card("hearts", "2"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_flush(hand))
 
@@ -74,6 +84,8 @@ class TestHand(unittest.TestCase):
             Card("clubs", "Q"),
             Card("spades", "K"),
             Card("hearts", "A"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_straight(hand))
 
@@ -91,9 +103,11 @@ class TestHand(unittest.TestCase):
         hand = [
             Card("hearts", "10"),
             Card("diamonds", "10"),
-            Card("clubs", "K"),
+            Card("clubs", "10"),
             Card("spades", "K"),
             Card("hearts", "A"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_two_pair(hand))
 
@@ -104,12 +118,16 @@ class TestHand(unittest.TestCase):
             Card("clubs", "K"),
             Card("spades", "Q"),
             Card("hearts", "A"),
+            Card("hearts", "8"),
+            Card("hearts", "7"),
         ]
         self.assertTrue(is_one_pair(hand))
 
     def test_high_card(self):
         VALUE_HIGH_CARD = 1
         hand = [
+            Card("hearts", "7"),
+            Card("clubs", "5"),
             Card("hearts", "10"),
             Card("diamonds", "2"),
             Card("clubs", "Q"),
@@ -191,9 +209,5 @@ class TestHand(unittest.TestCase):
         print(get_hand_ranking_from_value(value_of_hand(hand2, board)))
 
         result_hands = compare_hands(list_hands, board)
-
-        print(result_hands)
-
-        print(best_hands)
 
         self.assertEqual(best_hands, result_hands)

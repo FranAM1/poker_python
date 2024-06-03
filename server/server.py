@@ -292,6 +292,7 @@ class PokerServer:
             print("Fin del juego.")
             self.game.set_started(False)
             self.game.reset_player_votes()
+            self.game.reset_players_new_game()
 
     def check_for_losers(self):
         for client_socket in list(self.clients.keys()):

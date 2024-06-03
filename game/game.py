@@ -33,7 +33,6 @@ class Game:
         if len(self.__players) > 1 and self.__votes_to_start >= len(self.__players):
             self.__started = True
             print("Juego iniciado!")
-            self.reset_players_chips()
             self.reset_round()
         else:
             print("No se puede iniciar la partida. Faltan jugadores o votos.")
@@ -100,9 +99,10 @@ class Game:
     def remove_player(self, player):
         self.__players.remove(player)
 
-    def reset_players_chips(self):
+    def reset_players_new_game(self):
         for player in self.__players:
-            player.set_chips(200)
+            player.set_chips(100)
+            player.set_lost(False)
 
     def add_vote_to_start(self):
         self.__votes_to_start += 1
