@@ -18,7 +18,6 @@ class PokerClient:
                 if message:
                     messages = message.split(b"}{")
                     for i, msg in enumerate(messages):
-                        # Add missing braces
                         if i != 0:
                             msg = b"{" + msg
                         if i != len(messages) - 1:
