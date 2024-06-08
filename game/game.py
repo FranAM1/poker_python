@@ -170,7 +170,6 @@ class Game:
         for player in self.__players:
             player.set_has_played(False)
             player.set_current_bet(0)
-            player.set_folded(False)
 
     def reset_players_action(self):
         for player in self.__players:
