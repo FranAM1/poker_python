@@ -198,7 +198,7 @@ class Game:
             if player.get_chips() >= initial_bet:
                 player.remove_chips(initial_bet)
                 self.add_to_pot(initial_bet)
-            if player.get_chips() < initial_bet and player.get_chips() > 0:
+            elif player.get_chips() < initial_bet and player.get_chips() > 0:
                 current_chips = player.get_chips()
                 player.remove_chips(current_chips)
                 self.add_to_pot(current_chips)
