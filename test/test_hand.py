@@ -16,7 +16,7 @@ from utils.poker_logic import (
 )
 
 
-class TestHand(unittest.TestCase):
+class TestPokerLogic(unittest.TestCase):
     def test_royal_flush(self):
         hand = [
             Card("diamonds", "2"),
@@ -63,16 +63,17 @@ class TestHand(unittest.TestCase):
             Card("hearts", "8"),
             Card("hearts", "7"),
         ]
+
         self.assertTrue(is_full_house(hand))
 
     def test_flush(self):
         hand = [
             Card("hearts", "10"),
-            Card("hearts", "J"),
+            Card("spades", "J"),
             Card("hearts", "Q"),
             Card("hearts", "K"),
             Card("hearts", "2"),
-            Card("hearts", "8"),
+            Card("spades", "8"),
             Card("hearts", "7"),
         ]
         self.assertTrue(is_flush(hand))
@@ -103,7 +104,7 @@ class TestHand(unittest.TestCase):
         hand = [
             Card("hearts", "10"),
             Card("diamonds", "10"),
-            Card("clubs", "10"),
+            Card("clubs", "8"),
             Card("spades", "K"),
             Card("hearts", "A"),
             Card("hearts", "8"),
@@ -136,6 +137,8 @@ class TestHand(unittest.TestCase):
         ]
         self.assertEqual(VALUE_HIGH_CARD, value_of_hand(hand, []))
 
+
+class TestPokerGame(unittest.TestCase):
     def test_compare_best_hand(self):
         # generate 4 randoms hands and a board
         hand1 = [Card("spades", "Q"), Card("hearts", "A")]
@@ -187,20 +190,20 @@ class TestHand(unittest.TestCase):
         self.assertEqual(best_hands, result_hands)
 
     def test_compare_hands_with_tie_in_board(self):
-        hand1 = [Card("clubs", "8"), Card("spades", "7")]
+        hand1 = [Card("clubs", "K"), Card("spades", "7")]
 
-        hand2 = [Card("hearts", "K"), Card("diamonds", "A")]
+        hand2 = [Card("hearts", "6"), Card("diamonds", "A")]
 
-        hand3 = [Card("clubs", "5"), Card("spades", "A")]
+        hand3 = [Card("clubs", "5"), Card("spades", "8")]
 
         hand4 = [Card("hearts", "3"), Card("diamonds", "4")]
 
         board = [
-            Card("spades", "10"),
+            Card("spades", "A"),
             Card("diamonds", "J"),
             Card("hearts", "Q"),
             Card("spades", "2"),
-            Card("hearts", "10"),
+            Card("hearts", "K"),
         ]
 
         list_hands = [hand1, hand2, hand3, hand4]

@@ -110,6 +110,7 @@ class Player:
 
     def set_lost(self, has_lost):
         self.__has_lost = has_lost
+        self.__folded = True
 
     def has_voted(self):
         return self.__voted_to_start

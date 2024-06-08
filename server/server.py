@@ -134,7 +134,7 @@ class PokerServer:
                 client_socket,
                 json.dumps({"not_your_turn": "No es tu turno de jugar."}).encode(),
             )
-        elif action in ["raise", "check", "call", "fold", "all_in"]:
+        elif action in ["raise", "check", "call", "fold", "all-in"]:
             self.handle_player_turn(action, data, player, client_socket)
 
     def handle_player_turn(self, action, data, player, client_socket):
@@ -147,7 +147,7 @@ class PokerServer:
             self.handle_call_action(player, client_socket)
         elif action == "fold":
             self.handle_fold_action(player)
-        elif action == "all_in":
+        elif action == "all-in":
             self.handle_all_in_action(player, client_socket)
         else:
             self.send_message_to_client(
@@ -242,6 +242,20 @@ class PokerServer:
         if player in self.game.get_players():
             self.game.get_players().remove(player)
         client_socket.close()
+        
+        if self.game.has_started() and len(self.clients) < 2:
+            print("Fin del juego.")
+            self.game.set_started(False)
+            self.game.reset_player_votes()
+            self.game.reset_players_new_game()
+            self.broadcast(
+                json.dumps(
+                    {
+                        "game_over": "Fin del juego. No hay suficientes jugadores para continuar."
+                    }
+                ).encode()
+            )
+
 
     def check_winner(self):
         winners = self.game.get_winners()

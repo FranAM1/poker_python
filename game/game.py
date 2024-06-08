@@ -58,20 +58,40 @@ class Game:
 
     def next_round(self):
         if self.__round_stage == ROUND_STATE["Pre-flop"]:
+            if self.all_players_all_in():
+                self.deal_flop()
+                self.deal_turn()
+                self.deal_river()
+                return self.determine_winner()
             self.__round_stage += 1
             self.deal_flop()
             self.reset_turn()
         elif self.__round_stage == ROUND_STATE["Flop"]:
+            if self.all_players_all_in():
+                self.__round_stage = ROUND_STATE["Pre-flop"]
+                self.deal_turn()
+                self.deal_river()
+                return self.determine_winner()
             self.__round_stage += 1
             self.deal_turn()
             self.reset_turn()
         elif self.__round_stage == ROUND_STATE["Turn"]:
+            if self.all_players_all_in():
+                self.__round_stage = ROUND_STATE["Pre-flop"]
+                self.deal_river()
+                return self.determine_winner()
             self.__round_stage += 1
             self.deal_river()
             self.reset_turn()
         elif self.__round_stage == ROUND_STATE["River"]:
             self.__round_stage = ROUND_STATE["Pre-flop"]
             self.determine_winner()
+
+    def all_players_all_in(self):
+        active_players = [
+            player for player in self.__players if not player.get_folded()
+        ]
+        return all(player.get_chips() == 0 for player in active_players)
 
     def determine_winner(self):
         active_players = [

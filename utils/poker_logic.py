@@ -3,7 +3,11 @@ from game import SUITS, RANKS
 
 # Escalera real de color
 def is_royal_flush(hand: list) -> bool:
-    return is_straight_flush(hand) and hand[0].get_rank() == "10"
+    if is_straight_flush(hand):
+        ranks = [card.get_rank() for card in hand]
+        royal_ranks = ["10", "J", "Q", "K", "A"]
+        return all(rank in ranks for rank in royal_ranks)
+    return False
 
 
 # Escalera de color
@@ -28,7 +32,7 @@ def is_full_house(hand: list) -> bool:
 # Color
 def is_flush(hand: list) -> bool:
     suits = [card.get_suit() for card in hand]
-    return len(set(suits)) == 1
+    return any(suits.count(suit) >= 5 for suit in set(suits))
 
 
 # Escalera
@@ -36,7 +40,14 @@ def is_straight(hand: list) -> bool:
     ranks = [card.get_rank() for card in hand]
     ranks_values = [RANKS[rank] for rank in ranks]
     ranks_values.sort()
-    return ranks_values == list(range(ranks_values[0], ranks_values[0] + 5))
+
+    for i in range(len(ranks_values) - 4):
+        if all(
+            ranks_values[i + j] == ranks_values[i] + j for j in range(1, 5)
+        ):
+            return True
+    return False
+    
 
 
 # Trio
@@ -114,6 +125,7 @@ def value_of_hand(hand: list, board: list):
     # Logica para ordenar las claves de HAND_VALUES de mayor a menor para evitar
     # que una escalera de color se detecte como una escalera o que un full se detecte como un trio
     for hand_value in sorted(HAND_VALUES, key=lambda x: HANDS_RANKING[x], reverse=True):
+        print(hand_value)
         if HAND_VALUES[hand_value](full_hand):
             value = hand_value
             break
@@ -145,11 +157,6 @@ def compare_hands(list_hands: list, board: list):
             tied_hands.append(hand)
 
     if len(tied_hands) > 1:
-        max_rank = max(card.get_rank() for hand in tied_hands for card in hand)
-        tied_hands = [
-            hand
-            for hand in tied_hands
-            if max(card.get_rank() for card in hand) == max_rank
-        ]
+        return
 
     return tied_hands
