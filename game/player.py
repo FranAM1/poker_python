@@ -79,7 +79,7 @@ class Player:
         return self.__chips
 
     def set_chips(self, chips):
-        return self.__chips
+        self.__chips = chips
 
     def get_voted_to_start(self):
         return self.__voted_to_start
