@@ -166,24 +166,24 @@ class TestPokerGame(unittest.TestCase):
         self.assertEqual(best_hand, best_hands[0])
 
     def test_compare_hands_with_tie(self):
-        hand1 = [Card("clubs", "A"), Card("spades", "A")]
+        hand1 = [Card("clubs", "A"), Card("spades", "6")]
 
-        hand2 = [Card("hearts", "K"), Card("diamonds", "K")]
+        hand2 = [Card("hearts", "5"), Card("diamonds", "K")]
 
-        hand3 = [Card("clubs", "K"), Card("spades", "K")]
+        hand3 = [Card("clubs", "7"), Card("spades", "8")]
 
         hand4 = [Card("hearts", "3"), Card("diamonds", "4")]
 
         board = [
-            Card("spades", "10"),
-            Card("hearts", "J"),
+            Card("spades", "K"),
+            Card("hearts", "A"),
             Card("hearts", "Q"),
             Card("spades", "2"),
             Card("hearts", "2"),
         ]
 
         list_hands = [hand1, hand2, hand3, hand4]
-        best_hands = [hand2, hand3]
+        best_hands = [hand1]
 
         result_hands = compare_hands(list_hands, board)
 
@@ -199,8 +199,8 @@ class TestPokerGame(unittest.TestCase):
         hand4 = [Card("hearts", "3"), Card("diamonds", "4")]
 
         board = [
+            Card("spades", "2"),
             Card("spades", "A"),
-            Card("diamonds", "J"),
             Card("hearts", "Q"),
             Card("spades", "2"),
             Card("hearts", "K"),
@@ -208,8 +208,6 @@ class TestPokerGame(unittest.TestCase):
 
         list_hands = [hand1, hand2, hand3, hand4]
         best_hands = [hand2]
-
-        print(get_hand_ranking_from_value(value_of_hand(hand2, board)))
 
         result_hands = compare_hands(list_hands, board)
 

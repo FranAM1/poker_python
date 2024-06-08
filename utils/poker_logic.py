@@ -141,7 +141,7 @@ def get_hand_ranking_from_value(value: int):
     return None
 
 
-def compare_hands(list_hands: list, board: list):
+def compare_hands(list_hands, board):
     best_hand = list_hands[0]
     best_value = value_of_hand(best_hand, board)
 
@@ -157,6 +157,21 @@ def compare_hands(list_hands: list, board: list):
             tied_hands.append(hand)
 
     if len(tied_hands) > 1:
-        return
+        def hand_comparator(hand):
+            return sorted([card.get_rank_value() for card in hand], reverse=True)
+
+        tied_hands.sort(key=hand_comparator, reverse=True)
+
+        winning_hand = tied_hands[0]
+        winning_value = hand_comparator(winning_hand)
+
+        final_tied_hands = [winning_hand]
+        for hand in tied_hands[1:]:
+            if hand_comparator(hand) == winning_value:
+                final_tied_hands.append(hand)
+            else:
+                break
+
+        return final_tied_hands
 
     return tied_hands
