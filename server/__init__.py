@@ -10,6 +10,7 @@ actions = (
     "raise",
     "call",
     "fold",
+    "all-in",
 )
 
 
