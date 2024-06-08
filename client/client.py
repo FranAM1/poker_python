@@ -6,7 +6,7 @@ from game.__init__ import print_cards_in_rows
 
 
 class PokerClient:
-    def __init__(self, host="localhost", port=12345):
+    def __init__(self, host="192.168.0.10", port=12345):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((host, port))
         print(f"Conectado al servidor{host}:{port}")
@@ -17,11 +17,11 @@ class PokerClient:
                 message = self.client_socket.recv(4096)
                 if message:
                     messages = message.split(b"}{")
-                    for msg in messages:
-
-                        if not msg.startswith(b"{"):
+                    for i, msg in enumerate(messages):
+                        # Add missing braces
+                        if i != 0:
                             msg = b"{" + msg
-                        if not msg.endswith(b"}"):
+                        if i != len(messages) - 1:
                             msg = msg + b"}"
                         data = json.loads(msg.decode())
                         if "pot" in data:

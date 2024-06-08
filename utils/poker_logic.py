@@ -118,6 +118,8 @@ HANDS_TRANSLATION = {
 
 
 def value_of_hand(hand: list, board: list):
+    if len(board) == 0:
+        return HANDS_RANKING["high_card"]
 
     full_hand = hand + board
     value = "high_card"
@@ -125,7 +127,6 @@ def value_of_hand(hand: list, board: list):
     # Logica para ordenar las claves de HAND_VALUES de mayor a menor para evitar
     # que una escalera de color se detecte como una escalera o que un full se detecte como un trio
     for hand_value in sorted(HAND_VALUES, key=lambda x: HANDS_RANKING[x], reverse=True):
-        print(hand_value)
         if HAND_VALUES[hand_value](full_hand):
             value = hand_value
             break
