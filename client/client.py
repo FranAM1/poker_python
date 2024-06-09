@@ -112,8 +112,12 @@ def run_client():
             print("Desconectándose del servidor...")
             break
         elif action == "raise":
-            amount = int(input("Escribe la cantidad que quieres apostar: "))
-            client.send_message({"action": action, "amount": amount})
+            amount = input("Escribe la cantidad que quieres apostar: ")
+            if amount.isdigit():
+                amount = int(amount)
+                client.send_message({"action": action, "amount": amount})
+            else:
+                print("La cantidad debe ser un número.")
         elif action in [
             "votar",
             "acciones",
