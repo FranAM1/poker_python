@@ -7,7 +7,7 @@ from . import actions, validate_users_turn
 
 
 class PokerServer:
-    def __init__(self, host="192.168.0.10", port=12345, max_players=4):
+    def __init__(self, host="localhost", port=12345, max_players=4):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((host, port))
         self.server_socket.listen(max_players)
@@ -268,7 +268,8 @@ class PokerServer:
         if winners:
             winner_names = [winner.get_name().strip('"') for winner in winners]
             response = json.dumps(
-                {
+                {   
+                    "board": [card.to_dict() for card in self.game.get_board()],
                     "winners": {
                         "players": winner_names,
                         "pot": self.game.get_pot(),
